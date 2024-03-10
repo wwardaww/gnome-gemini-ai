@@ -24,3 +24,10 @@
 .chat-scroll-section {
     max-height:800px;
 }
+.gemini-icon {
+    background-image: url("assets/gemini.png");
+    background-size: 45px;
+    width: 45px;
+    height: 30px;
+    padding: 10px;
+}

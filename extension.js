@@ -20,14 +20,12 @@
 
 const GETTEXT_DOMAIN = 'my-indicator-extension';
 
-const { GObject, St } = imports.gi;
+const { GObject, St, Soup, GLib} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const Soup = imports.gi.Soup;
-const GLib = imports.gi.GLib;
 
 
 const _ = ExtensionUtils.gettext;
@@ -55,10 +53,7 @@ class Indicator extends PanelMenu.Button {
         super._init(0.0, _('My Shiny Indicator'));
         this.username = GLib.get_real_name();
         this._loadSettings();
-        this.add_child(new St.Icon({
-            icon_name: 'atom',
-            style_class: 'system-status-icon',
-        }));
+        this.add_child(new St.Icon({style_class: 'gemini-icon'}));
         this.menu.actor.style_class = "m-w-100"
       
         let item = new PopupMenu.PopupBaseMenuItem({
