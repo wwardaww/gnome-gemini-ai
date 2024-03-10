@@ -131,7 +131,7 @@ class Indicator extends PanelMenu.Button {
     getAireponse(inputItem, question){
         log(`API key: ${GEMINIAPIKEY}`);
         let _httpSession = new Soup.Session();
-        let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINIAPIKEY}`;
+        let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINIAPIKEY}`;
         var body = `{"contents":[{"parts":[{"text":"${question}"}]}]}`
 
         let message = Soup.Message.new('POST', url);
