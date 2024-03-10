@@ -1,0 +1,15 @@
+<schemalist gettext-domain="gnome-shell-extensions">
+  <schema id="org.gnome.shell.extensions.geminiaiubuntu"
+      path="/org/gnome/shell/extensions/geminiaiubuntu/">
+
+    <key name="gemini-api-key" type="s">
+        <default>"KEY"</default>
+        <summary>Gemini api key for working</summary>
+        <description>
+            You need to set api key for this extention
+        </description>
+    </key>
+
+   
+  </schema>
+</schemalist>

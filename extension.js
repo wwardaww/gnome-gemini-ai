@@ -28,17 +28,33 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Soup = imports.gi.Soup;
 const GLib = imports.gi.GLib;
-const GeminiAPIKey = "AIzaSyDxn55JQMRRVKx2a--SDhCPkXi9qttknVM";
+
 
 const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 const md2pango = Me.imports.md2pango;
+const Prefs = Me.imports.prefs;
+
+
+
+let GEMINIAPIKEY = "";
+
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
-    
+    _loadSettings () {
+        this._settings = Prefs.SettingsSchema;
+        this._settingsChangedId = this._settings.connect('changed', () => {
+            this._fetchSettings();
+        });
+        this._fetchSettings();
+    }
+    _fetchSettings () {
+        GEMINIAPIKEY           = this._settings.get_string("gemini-api-key");
+    }
     _init() {
         super._init(0.0, _('My Shiny Indicator'));
         this.username = GLib.get_real_name();
+        this._loadSettings();
         this.add_child(new St.Icon({
             icon_name: 'atom',
             style_class: 'system-status-icon',
@@ -64,7 +80,10 @@ class Indicator extends PanelMenu.Button {
             y_expand: true
         });
         let clearButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'edit-clear', style_class: 'clear-button'})
+            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'app-remove-symbolic', style_class: 'clear-button'})
+        });
+        let settingsButton = new St.Button({
+            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'settings-symbolic', style_class: 'clear-button'})
         });
         this.scrollView.add_actor(this.chatSection.actor);
         searchEntry.clutter_text.connect('activate', (actor) => {
@@ -80,8 +99,15 @@ class Indicator extends PanelMenu.Button {
             this.scrollView.add_actor(this.chatSection.actor);
             this.menu.box.add(this.scrollView);
         });
+        settingsButton.connect('clicked', (self) => {
+            this.openSettings();
+        });
+        if(GEMINIAPIKEY == ""){
+            this.openSettings();
+        }
         item.add(searchEntry);
         item.add(clearButton);
+        item.add(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
     }
@@ -108,8 +134,9 @@ class Indicator extends PanelMenu.Button {
         this.getAireponse(aiResponseItem, text);
     }
     getAireponse(inputItem, question){
+        log(`API key: ${GEMINIAPIKEY}`);
         let _httpSession = new Soup.Session();
-        let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GeminiAPIKey}`;
+        let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINIAPIKEY}`;
         var body = `{"contents":[{"parts":[{"text":"${question}"}]}]}`
 
         let message = Soup.Message.new('POST', url);
@@ -123,6 +150,17 @@ class Indicator extends PanelMenu.Button {
             inputItem.label.clutter_text.set_markup(htmlResponse);
         });
         
+    }
+    openSettings () {
+        log("settingsde");
+        if (typeof ExtensionUtils.openPrefs === 'function') {
+            ExtensionUtils.openPrefs();
+        } else {
+            Util.spawn([
+                "gnome-shell-extension-prefs",
+                Me.uuid
+            ]);
+        }
     }
 });
 

@@ -1,7 +1,8 @@
 {
-  "name": "Local ai",
-  "description": "local ai GTP3",
-  "uuid": "gpt3aiubuntu@arda.com",
+  "name": "Gemini AI",
+  "description": "Gemini Aı for Ubuntu",
+  "uuid": "geminiaiubuntu@arda.com",
+  "settings-schema": "org.gnome.shell.extensions.geminiaiubuntu",
   "shell-version": [
     "42"
   ]
