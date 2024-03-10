@@ -1,0 +1,26 @@
+/* Add your custom extension styling here */
+.chatLog{
+   color: black;
+
+}
+.chatType{
+    color: black;
+    font-weight: bold;
+}
+.ai-entry {
+    color: black !important;
+    width: 250px;
+  }
+.clear-button {
+    width: 24px;
+}
+.copy-button {
+    width: 24px;
+}
+.m-w-100{
+    max-width: 1800px;
+    text-wrap: wrap;
+}
+.chat-scroll-section {
+    max-height:800px;
+}

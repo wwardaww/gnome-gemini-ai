@@ -1,0 +1,8 @@
+{
+  "name": "Local ai",
+  "description": "local ai GTP3",
+  "uuid": "gpt3aiubuntu@arda.com",
+  "shell-version": [
+    "42"
+  ]
+}
