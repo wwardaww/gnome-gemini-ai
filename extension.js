@@ -118,7 +118,6 @@ class Indicator extends PanelMenu.Button {
 
         aiResponseItem.connect('activate', (self) => {
             St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, aiResponseItem.label.text);
-            log(`Copied: ${aiResponseItem.label.text}`);
         });
         
         this.chatSection.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
