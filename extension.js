@@ -82,7 +82,6 @@ class Indicator extends PanelMenu.Button {
         });
         this.scrollView.add_actor(this.chatSection.actor);
         searchEntry.clutter_text.connect('activate', (actor) => {
-            log(`Activated: ${actor.text}`);
             this.aiResponse(actor.text);
             searchEntry.clutter_text.set_text("");
 
@@ -129,7 +128,6 @@ class Indicator extends PanelMenu.Button {
         this.getAireponse(aiResponseItem, text);
     }
     getAireponse(inputItem, question){
-        log(`API key: ${GEMINIAPIKEY}`);
         let _httpSession = new Soup.Session();
         let url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=${GEMINIAPIKEY}`;
         var body = `{"contents":[{"parts":[{"text":"${question}"}]}]}`
@@ -139,7 +137,6 @@ class Indicator extends PanelMenu.Button {
         message.set_request('application/json', 2,body);
         _httpSession.queue_message(message, function (_httpSession, message){
             const res = JSON.parse(message.response_body.data);
-            log(message.response_body.data);
             let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
             let htmlResponse = md2pango.convert(aiResponse);
 
@@ -148,7 +145,6 @@ class Indicator extends PanelMenu.Button {
         
     }
     openSettings () {
-        log("settingsde");
         if (typeof ExtensionUtils.openPrefs === 'function') {
             ExtensionUtils.openPrefs();
         } else {
