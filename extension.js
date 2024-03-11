@@ -36,6 +36,7 @@ const Prefs = Me.imports.prefs;
 
 
 let GEMINIAPIKEY = "";
+let RECURSIVETALK = false;
 
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
@@ -48,10 +49,12 @@ class Indicator extends PanelMenu.Button {
     }
     _fetchSettings () {
         GEMINIAPIKEY           = this._settings.get_string("gemini-api-key");
+        RECURSIVETALK          = this._settings.get_boolean("log-history");
     }
     _init() {
         super._init(0.0, _('My Shiny Indicator'));
         this.username = GLib.get_real_name();
+        this.chatHistory = [];
         this._loadSettings();
         this.add_child(new St.Icon({style_class: 'gemini-icon'}));
         this.menu.actor.style_class = "m-w-100"
@@ -88,6 +91,7 @@ class Indicator extends PanelMenu.Button {
         });
         clearButton.connect('clicked', (self) => {
             searchEntry.clutter_text.set_text("");
+            this.chatHistory = [];
             this.menu.box.remove_child(this.scrollView);
             this.chatSection = new PopupMenu.PopupMenuSection();
             this.scrollView.add_actor(this.chatSection.actor);
@@ -129,19 +133,41 @@ class Indicator extends PanelMenu.Button {
     getAireponse(inputItem, question){
         let _httpSession = new Soup.Session();
         let url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=${GEMINIAPIKEY}`;
-        var body = `{"contents":[{"parts":[{"text":"${question}"}]}]}`
 
+        var body = this.buildBody(question);
         let message = Soup.Message.new('POST', url);
 
         message.set_request('application/json', 2,body);
-        _httpSession.queue_message(message, function (_httpSession, message){
+        _httpSession.queue_message(message, (_httpSession, message) => {
             const res = JSON.parse(message.response_body.data);
             let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
             let htmlResponse = md2pango.convert(aiResponse);
-
+            if(RECURSIVETALK) {
+                this.chatHistory.push({
+                    role: "user",
+                    parts:[{text: question}]
+                });
+                this.chatHistory.push({
+                    role: "model",
+                    parts:[{text: aiResponse}]
+                });
+            }
             inputItem.label.clutter_text.set_markup(htmlResponse);
         });
         
+    }
+    buildBody(input){
+        if(this.chatHistory.length == 0){
+            return `{"contents":[{"parts":[{"text":"${input}"}]}]}`
+        }
+        const stringfiedHistory = JSON.stringify([
+            ...this.chatHistory,
+            {
+                role: "user",
+                parts:[{text: input}]
+            }
+        ]);
+        return `{"contents":${stringfiedHistory}}`
     }
     openSettings () {
         if (typeof ExtensionUtils.openPrefs === 'function') {
