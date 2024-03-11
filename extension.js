@@ -52,7 +52,7 @@ class Indicator extends PanelMenu.Button {
         RECURSIVETALK          = this._settings.get_boolean("log-history");
     }
     _init() {
-        super._init(0.0, _('My Shiny Indicator'));
+        super._init(0.0, _('Gemini ai for Ubuntu'));
         this.username = GLib.get_real_name();
         this.chatHistory = [];
         this._loadSettings();
@@ -78,10 +78,10 @@ class Indicator extends PanelMenu.Button {
             y_expand: true
         });
         let clearButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'app-remove-symbolic', style_class: 'clear-button'})
+            can_focus: true,  toggle_mode: true, child: new St.Icon({style_class: 'trash-icon'})
         });
         let settingsButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'settings-symbolic', style_class: 'clear-button'})
+            can_focus: true,  toggle_mode: true, child: new St.Icon({style_class: 'settings-icon'})
         });
         this.scrollView.add_actor(this.chatSection.actor);
         searchEntry.clutter_text.connect('activate', (actor) => {
