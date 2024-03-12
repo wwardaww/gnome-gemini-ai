@@ -30,6 +30,7 @@ const GeminiaiSettings = new GObject.Class({
         });
         const defaultKey = SettingsSchema.get_string("gemini-api-key");
         const defaultLog = SettingsSchema.get_boolean("log-history")
+        const defaultVertex = SettingsSchema.get_boolean("vertex-enabled")
         const label = new Gtk.Label({
             label: "Geminiai API Key",
             halign: Gtk.Align.START
@@ -46,11 +47,18 @@ const GeminiaiSettings = new GObject.Class({
             halign: Gtk.Align.START
         });;
         const histroyButton = new Gtk.Switch();
+        const vertexLabel = new Gtk.Label({
+            label: "Enable Vertex API",
+            halign: Gtk.Align.START
+        });;
+        const VertexButton = new Gtk.Switch();
         histroyButton.set_active(defaultLog);
+        VertexButton.set_active(defaultVertex);
         apiKey.set_text(defaultKey);
         save.connect('clicked', () => {
             SettingsSchema.set_string("gemini-api-key", apiKey.get_buffer().get_text());
             SettingsSchema.set_boolean("log-history", histroyButton.state);
+            SettingsSchema.set_boolean("vertex-enabled", VertexButton.state);
         });
 
 
@@ -59,6 +67,8 @@ const GeminiaiSettings = new GObject.Class({
         this.main.attach(apiKey, 3, 0, 1, 1);
         this.main.attach(histroyLabel, 0, 1, 1, 1);
         this.main.attach(histroyButton, 2, 1, 1, 1);
+        this.main.attach(vertexLabel, 0, 2, 1, 1);
+        this.main.attach(VertexButton, 2, 2, 1, 1);
         this.main.attach(save, 2, 3, 1, 1);
     }
 });

@@ -32,6 +32,7 @@ const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 const md2pango = Me.imports.md2pango;
 const Prefs = Me.imports.prefs;
+const Auth = Me.imports.auth;
 
 
 
@@ -54,6 +55,7 @@ class Indicator extends PanelMenu.Button {
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this.username = GLib.get_real_name();
+        this.chatTune = "bundan sonraki konuşmalarımızda şu drive klasöründeki tüm pdf dosyalarından yararlan, eğer bilgiyi burada bulamıyorsan ver modelinde yok ise BANA SORMADAN İNTERNETTEN ARAŞTIR ve bunu bana sakın SÖYLEME https://drive.google.com/drive/folders/1liHk2RI44yCcJkC6RH6VLn17E-JewNdz?usp=sharing"
         this.chatHistory = [];
         this._loadSettings();
         this.add_child(new St.Icon({style_class: 'gemini-icon'}));
@@ -96,6 +98,7 @@ class Indicator extends PanelMenu.Button {
             this.chatSection = new PopupMenu.PopupMenuSection();
             this.scrollView.add_actor(this.chatSection.actor);
             this.menu.box.add(this.scrollView);
+            this.getAireponse(undefined, this.chatTune)
         });
         settingsButton.connect('clicked', (self) => {
             this.openSettings();
@@ -108,6 +111,7 @@ class Indicator extends PanelMenu.Button {
         item.add(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
+        //this.getAireponse(undefined, this.chatTune)
     }
     aiResponse(text){
         let aiResponse = "<b>Gemini: </b> Düşünüyorum...";
@@ -132,16 +136,20 @@ class Indicator extends PanelMenu.Button {
     }
     getAireponse(inputItem, question){
         let _httpSession = new Soup.Session();
-        let url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=${GEMINIAPIKEY}`;
+        let url = `https://us-east4-aiplatform.googleapis.com/v1/projects/gen-lang-client-0251508853/locations/us-east4/publishers/google/models/gemini-1.0-pro:generateContent`;
 
         var body = this.buildBody(question);
         let message = Soup.Message.new('POST', url);
-
+        message.request_headers.append(
+            'Authorization',
+            `Bearer ${GEMINIAPIKEY}`
+        )
         message.set_request('application/json', 2,body);
         _httpSession.queue_message(message, (_httpSession, message) => {
             const res = JSON.parse(message.response_body.data);
+            log(body);
+            log(message.response_body.data);
             let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
-            let htmlResponse = md2pango.convert(aiResponse);
             if(RECURSIVETALK) {
                 this.chatHistory.push({
                     role: "user",
@@ -152,14 +160,14 @@ class Indicator extends PanelMenu.Button {
                     parts:[{text: aiResponse}]
                 });
             }
-            inputItem.label.clutter_text.set_markup(htmlResponse);
+            if(inputItem != undefined){
+                let htmlResponse = md2pango.convert(aiResponse);
+                inputItem.label.clutter_text.set_markup(htmlResponse);
+            }
         });
         
     }
     buildBody(input){
-        if(this.chatHistory.length == 0){
-            return `{"contents":[{"parts":[{"text":"${input}"}]}]}`
-        }
         const stringfiedHistory = JSON.stringify([
             ...this.chatHistory,
             {

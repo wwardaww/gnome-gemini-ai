@@ -16,6 +16,13 @@
            it will remeember talk history
         </description>
     </key>
+    <key name="vertex-enabled" type="b">
+        <default>false</default>
+        <summary>Enable Vertex</summary>
+        <description>
+           it will enables Vertex API instead of pur gemini
+        </description>
+    </key>
 
    
   </schema>
