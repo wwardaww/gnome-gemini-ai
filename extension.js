@@ -40,6 +40,7 @@ let GEMINIAPIKEY = "";
 let DRIVEFOLDER = "";
 let VERTEXPROJECTID = "";
 let LOCATION = "";
+let USERNAME = GLib.get_real_name();
 let RECURSIVETALK = false;
 let ISVERTEX = false;
 
@@ -67,7 +68,6 @@ class Indicator extends PanelMenu.Button {
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this._loadSettings();
-        this.username = GLib.get_real_name();
         if(DRIVEFOLDER != '') {
             this.chatTune = this.getTuneString();
         }
@@ -136,7 +136,7 @@ class Indicator extends PanelMenu.Button {
         let aiResponse = _("<b>Gemini: </b> Thinking...");
         const inputCategory = new PopupMenu.PopupMenuItem("");
         const aiResponseItem = new PopupMenu.PopupMenuItem("");
-        inputCategory.label.clutter_text.set_markup(`<b>${this.username}: </b>${text}`);
+        inputCategory.label.clutter_text.set_markup(`<b>${USERNAME}: </b>${text}`);
         aiResponseItem.label.clutter_text.set_markup(aiResponse);
         inputCategory.label.x_expand = true;
         aiResponseItem.label.x_expand = true;
@@ -198,7 +198,13 @@ class Indicator extends PanelMenu.Button {
     }
     getTuneString(){
         const date = new Date();
-        return `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, internete bağlantın her zaman olsun, ve bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et ${DRIVEFOLDER}`;
+        // PLEASE DO NOT TRANSLATE FINE TUNE BECAUSE 
+        // VERTEX SOMETIMES DOESNT SUPPORT INTERNET CONNECTION 
+        //  IF YOU TRANSLATE TO ENGLISH
+        return `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, 
+        İNTERNETE BAĞLANTIN HER ZAMAN OLSUN ÇÜNKÜ türkçe konuşuyorum diye internet bağlatın olmaz ise bu kesin bir ırkçılıktır, 
+        bana ${USERNAME} olarak hitap edebilirsin,
+        bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et ${DRIVEFOLDER}`;
     }
     buildBody(input){
         const stringfiedHistory = JSON.stringify([
