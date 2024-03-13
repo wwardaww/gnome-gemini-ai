@@ -1,0 +1,52 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-13 21:49+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: extension.js:58
+msgid "Gemini ai for Ubuntu"
+msgstr ""
+
+#: extension.js:60
+msgid ""
+"In our future conversations, use all the pdf files in the drive folder and "
+"always have an internet connection."
+msgstr ""
+
+#: extension.js:79
+msgid "What's on your mind?"
+msgstr ""
+
+#: extension.js:123
+msgid "<b>Gemini: </b> Thinking..."
+msgstr ""
+
+#: prefs.js:37
+msgid "Geminiai API Key"
+msgstr ""
+
+#: prefs.js:44
+msgid "Save"
+msgstr ""
+
+#: prefs.js:48
+msgid "Remember talk history"
+msgstr ""
+
+#: prefs.js:53
+msgid "Enable Vertex API"
+msgstr ""

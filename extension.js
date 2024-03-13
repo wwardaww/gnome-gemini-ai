@@ -18,7 +18,7 @@
 
 /* exported init */
 
-const GETTEXT_DOMAIN = 'my-indicator-extension';
+const GETTEXT_DOMAIN = 'geminiaiubuntu';
 
 const { GObject, St, Soup, GLib} = imports.gi;
 
@@ -38,6 +38,7 @@ const Auth = Me.imports.auth;
 
 let GEMINIAPIKEY = "";
 let RECURSIVETALK = false;
+let ISVERTEX = false;
 
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
@@ -51,11 +52,12 @@ class Indicator extends PanelMenu.Button {
     _fetchSettings () {
         GEMINIAPIKEY           = this._settings.get_string("gemini-api-key");
         RECURSIVETALK          = this._settings.get_boolean("log-history");
+        ISVERTEX               = this._settings.get_boolean("vertex-enabled");
     }
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this.username = GLib.get_real_name();
-        this.chatTune = "bundan sonraki konuşmalarımızda şu drive klasöründeki tüm pdf dosyalarından yararlan, eğer bilgiyi burada bulamıyorsan ver modelinde yok ise BANA SORMADAN İNTERNETTEN ARAŞTIR ve bunu bana sakın SÖYLEME https://drive.google.com/drive/folders/1liHk2RI44yCcJkC6RH6VLn17E-JewNdz?usp=sharing"
+        this.chatTune = _("In our future conversations, use all the pdf files in the drive folder and always have an internet connection.") + " https://drive.google.com/drive/folders/1liHk2RI44yCcJkC6RH6VLn17E-JewNdz?usp=sharing"
         this.chatHistory = [];
         this._loadSettings();
         this.add_child(new St.Icon({style_class: 'gemini-icon'}));
@@ -74,7 +76,7 @@ class Indicator extends PanelMenu.Button {
             name: 'aiEntry',
             style_class: 'ai-entry',
             can_focus: true,
-            hint_text: _('Ne yapabilirim?'),
+            hint_text: _("What's on your mind?"),
             track_hover: true,
             x_expand: true,
             y_expand: true
@@ -98,7 +100,9 @@ class Indicator extends PanelMenu.Button {
             this.chatSection = new PopupMenu.PopupMenuSection();
             this.scrollView.add_actor(this.chatSection.actor);
             this.menu.box.add(this.scrollView);
-            this.getAireponse(undefined, this.chatTune)
+            if(ISVERTEX){
+                this.getAireponse(undefined, this.chatTune)
+            }
         });
         settingsButton.connect('clicked', (self) => {
             this.openSettings();
@@ -111,10 +115,12 @@ class Indicator extends PanelMenu.Button {
         item.add(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
-        //this.getAireponse(undefined, this.chatTune)
+        if(ISVERTEX){
+            this.getAireponse(undefined, this.chatTune);
+        }
     }
     aiResponse(text){
-        let aiResponse = "<b>Gemini: </b> Düşünüyorum...";
+        let aiResponse = _("<b>Gemini: </b> Thinking...");
         const inputCategory = new PopupMenu.PopupMenuItem("");
         const aiResponseItem = new PopupMenu.PopupMenuItem("");
         inputCategory.label.clutter_text.set_markup(`<b>${this.username}: </b>${text}`);
@@ -134,12 +140,17 @@ class Indicator extends PanelMenu.Button {
        
         this.getAireponse(aiResponseItem, text);
     }
-    getAireponse(inputItem, question){
+    getAireponse(inputItem, question, newKey = undefined){
         let _httpSession = new Soup.Session();
         let url = `https://us-east4-aiplatform.googleapis.com/v1/projects/gen-lang-client-0251508853/locations/us-east4/publishers/google/models/gemini-1.0-pro:generateContent`;
 
+        if(newKey != undefined){
+            this._settings.set_string("gemini-api-key", newKey);
+            GEMINIAPIKEY = newKey;
+        }
         var body = this.buildBody(question);
         let message = Soup.Message.new('POST', url);
+        log("API KEY: " + GEMINIAPIKEY);
         message.request_headers.append(
             'Authorization',
             `Bearer ${GEMINIAPIKEY}`
@@ -147,22 +158,26 @@ class Indicator extends PanelMenu.Button {
         message.set_request('application/json', 2,body);
         _httpSession.queue_message(message, (_httpSession, message) => {
             const res = JSON.parse(message.response_body.data);
-            log(body);
             log(message.response_body.data);
-            let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
-            if(RECURSIVETALK) {
-                this.chatHistory.push({
-                    role: "user",
-                    parts:[{text: question}]
-                });
-                this.chatHistory.push({
-                    role: "model",
-                    parts:[{text: aiResponse}]
-                });
-            }
-            if(inputItem != undefined){
-                let htmlResponse = md2pango.convert(aiResponse);
-                inputItem.label.clutter_text.set_markup(htmlResponse);
+            if(res.error?.code == 401 && newKey == undefined){
+                let key = Auth.generateAPIKey();
+                this.getAireponse(inputItem, question,key);
+            } else {
+                let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
+                if(RECURSIVETALK) {
+                    this.chatHistory.push({
+                        role: "user",
+                        parts:[{text: question}]
+                    });
+                    this.chatHistory.push({
+                        role: "model",
+                        parts:[{text: aiResponse}]
+                    });
+                }
+                if(inputItem != undefined){
+                    let htmlResponse = md2pango.convert(aiResponse);
+                    inputItem.label.clutter_text.set_markup(htmlResponse);
+                }
             }
         });
         

@@ -3,6 +3,8 @@ const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = imports.misc.extensionUtils.getCurrentExtension();
 
+
+const _ = ExtensionUtils.gettext;
 const SCHEMA_NAME = 'org.gnome.shell.extensions.geminiaiubuntu';
 
 
@@ -32,23 +34,23 @@ const GeminiaiSettings = new GObject.Class({
         const defaultLog = SettingsSchema.get_boolean("log-history")
         const defaultVertex = SettingsSchema.get_boolean("vertex-enabled")
         const label = new Gtk.Label({
-            label: "Geminiai API Key",
+            label: _("Geminiai API Key"),
             halign: Gtk.Align.START
         });
         const apiKey = new Gtk.Entry({
             buffer: new Gtk.EntryBuffer()
         });
         const save = new Gtk.Button({
-            label: 'Save'
+            label: _('Save')
         });
 
         const histroyLabel = new Gtk.Label({
-            label: "Remember talk history",
+            label: _("Remember talk history"),
             halign: Gtk.Align.START
         });;
         const histroyButton = new Gtk.Switch();
         const vertexLabel = new Gtk.Label({
-            label: "Enable Vertex API",
+            label: _("Enable Vertex API"),
             halign: Gtk.Align.START
         });;
         const VertexButton = new Gtk.Switch();
