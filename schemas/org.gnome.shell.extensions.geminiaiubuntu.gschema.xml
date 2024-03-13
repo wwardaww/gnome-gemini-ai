@@ -9,6 +9,13 @@
             You need to set api key for this extention
         </description>
     </key>
+     <key name="drive-folder" type="s">
+        <default>""</default>
+        <summary>Custom files folder for vertex</summary>
+        <description>
+            You can set drive folder for this extention
+        </description>
+    </key>
     <key name="log-history" type="b">
         <default>false</default>
         <summary>Remember talk history</summary>

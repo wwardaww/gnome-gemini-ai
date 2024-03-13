@@ -37,6 +37,7 @@ const Auth = Me.imports.auth;
 
 
 let GEMINIAPIKEY = "";
+let DRIVEFOLDER = "";
 let RECURSIVETALK = false;
 let ISVERTEX = false;
 
@@ -46,18 +47,25 @@ class Indicator extends PanelMenu.Button {
         this._settings = Prefs.SettingsSchema;
         this._settingsChangedId = this._settings.connect('changed', () => {
             this._fetchSettings();
+            if(DRIVEFOLDER != '' && ISVERTEX) {
+                this.chatTune = `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, internete bağlantın her zaman olsun ${DRIVEFOLDER}`;
+                this.getAireponse(undefined, this.chatTune);
+            }
         });
         this._fetchSettings();
     }
     _fetchSettings () {
         GEMINIAPIKEY           = this._settings.get_string("gemini-api-key");
+        DRIVEFOLDER           = this._settings.get_string("drive-folder");
         RECURSIVETALK          = this._settings.get_boolean("log-history");
         ISVERTEX               = this._settings.get_boolean("vertex-enabled");
     }
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this.username = GLib.get_real_name();
-        this.chatTune = "bundan sonraki konuşmalarımızda şu drive klasöründeki tüm pdf dosyalarından yararlan, internete bağlantın her zaman olsun https://drive.google.com/drive/folders/1liHk2RI44yCcJkC6RH6VLn17E-JewNdz?usp=sharing"
+        if(DRIVEFOLDER != '') {
+            this.chatTune = `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, internete bağlantın her zaman olsun ${DRIVEFOLDER}`;
+        }
         this.chatHistory = [];
         this._loadSettings();
         this.add_child(new St.Icon({style_class: 'gemini-icon'}));
@@ -100,7 +108,7 @@ class Indicator extends PanelMenu.Button {
             this.chatSection = new PopupMenu.PopupMenuSection();
             this.scrollView.add_actor(this.chatSection.actor);
             this.menu.box.add(this.scrollView);
-            if(ISVERTEX){
+            if(ISVERTEX && DRIVEFOLDER != ''){
                 this.getAireponse(undefined, this.chatTune)
             }
         });
@@ -115,7 +123,7 @@ class Indicator extends PanelMenu.Button {
         item.add(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
-        if(ISVERTEX){
+        if(ISVERTEX && DRIVEFOLDER != ''){
             this.getAireponse(undefined, this.chatTune);
         }
     }
