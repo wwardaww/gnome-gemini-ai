@@ -202,8 +202,8 @@ class Indicator extends PanelMenu.Button {
         // VERTEX SOMETIMES DOESNT SUPPORT INTERNET CONNECTION 
         //  IF YOU TRANSLATE TO ENGLISH
         return `bana ${USERNAME} olarak hitap edebilirsin, \n
-        bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, \n
-        bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et ${DRIVEFOLDER}, \n
+        bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf, excel, word, txt dosyalarından yararlan ama önce bana sor: ${DRIVEFOLDER}\n
+        bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et, \n
         AYRICA İNTERNETE HER ZAMAN BAĞLI KAL ÇÜNKÜ türkçe konuşuyorum diye internet bağlatın olmaz ise sen ırkçılık yapmış olursun
        `;
     }
