@@ -38,8 +38,11 @@ const Auth = Me.imports.auth;
 
 let GEMINIAPIKEY = "";
 let DRIVEFOLDER = "";
+let VERTEXPROJECTID = "";
+let LOCATION = "";
 let RECURSIVETALK = false;
 let ISVERTEX = false;
+
 
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
@@ -48,7 +51,7 @@ class Indicator extends PanelMenu.Button {
         this._settingsChangedId = this._settings.connect('changed', () => {
             this._fetchSettings();
             if(DRIVEFOLDER != '' && ISVERTEX) {
-                this.chatTune = `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, internete bağlantın her zaman olsun ${DRIVEFOLDER}`;
+                this.chatTune = this.getTuneString();
                 this.getAireponse(undefined, this.chatTune);
             }
         });
@@ -56,18 +59,20 @@ class Indicator extends PanelMenu.Button {
     }
     _fetchSettings () {
         GEMINIAPIKEY           = this._settings.get_string("gemini-api-key");
-        DRIVEFOLDER           = this._settings.get_string("drive-folder");
+        DRIVEFOLDER            = this._settings.get_string("drive-folder");
+        VERTEXPROJECTID        = this._settings.get_string("vertex-project-id");
         RECURSIVETALK          = this._settings.get_boolean("log-history");
         ISVERTEX               = this._settings.get_boolean("vertex-enabled");
     }
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
+        this._loadSettings();
         this.username = GLib.get_real_name();
         if(DRIVEFOLDER != '') {
-            this.chatTune = `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, internete bağlantın her zaman olsun ${DRIVEFOLDER}`;
+            this.chatTune = this.getTuneString();
         }
         this.chatHistory = [];
-        this._loadSettings();
+        
         this.add_child(new St.Icon({style_class: 'gemini-icon'}));
         this.menu.actor.style_class = "m-w-100"
       
@@ -150,15 +155,16 @@ class Indicator extends PanelMenu.Button {
     }
     getAireponse(inputItem, question, newKey = undefined){
         let _httpSession = new Soup.Session();
-        let url = `https://us-east4-aiplatform.googleapis.com/v1/projects/gen-lang-client-0251508853/locations/us-east4/publishers/google/models/gemini-1.0-pro:generateContent`;
-
+        let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINIAPIKEY}`;
+        if(VERTEXPROJECTID != "" && ISVERTEX){
+            url = `https://us-east4-aiplatform.googleapis.com/v1/projects/${VERTEXPROJECTID}/locations/us-east4/publishers/google/models/gemini-1.0-pro:generateContent`;
+        }
         if(newKey != undefined){
             this._settings.set_string("gemini-api-key", newKey);
             GEMINIAPIKEY = newKey;
         }
         var body = this.buildBody(question);
         let message = Soup.Message.new('POST', url);
-        log("API KEY: " + GEMINIAPIKEY);
         message.request_headers.append(
             'Authorization',
             `Bearer ${GEMINIAPIKEY}`
@@ -189,6 +195,10 @@ class Indicator extends PanelMenu.Button {
             }
         });
         
+    }
+    getTuneString(){
+        const date = new Date();
+        return `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, internete bağlantın her zaman olsun, ve bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et ${DRIVEFOLDER}`;
     }
     buildBody(input){
         const stringfiedHistory = JSON.stringify([
@@ -222,8 +232,16 @@ class Extension {
     }
 
     enable() {
-        this._indicator = new Indicator();
-        Main.panel.addToStatusArea(this._uuid, this._indicator);
+        let url = "https://thisipcan.cyou/json";
+        let _httpSession = new Soup.Session();
+        let message = Soup.Message.new('GET', url);
+        _httpSession.queue_message(message, (_httpSession, message) => {
+            const res = JSON.parse(message.response_body.data);
+            LOCATION = `${res.countryName}/${res.cityName}`;
+            this._indicator = new Indicator();
+            Main.panel.addToStatusArea(this._uuid, this._indicator);
+        });
+        
     }
 
     disable() {

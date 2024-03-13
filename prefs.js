@@ -37,6 +37,8 @@ const GeminiaiSettings = new Lang.Class({
         const defaultFolder = SettingsSchema.get_string("drive-folder");
         const defaultLog = SettingsSchema.get_boolean("log-history")
         const defaultVertex = SettingsSchema.get_boolean("vertex-enabled")
+        const defaultVertexProject = SettingsSchema.get_string("vertex-project-id")
+
         const label = new Gtk.Label({
             label: _("Geminiai API Key"),
             halign: Gtk.Align.START
@@ -44,6 +46,7 @@ const GeminiaiSettings = new Lang.Class({
         const apiKey = new Gtk.Entry({
             buffer: new Gtk.EntryBuffer()
         });
+
         const labelFolder = new Gtk.Label({
             label: _("Drive Folder"),
             halign: Gtk.Align.START
@@ -51,21 +54,29 @@ const GeminiaiSettings = new Lang.Class({
         const folderUrl = new Gtk.Entry({
             buffer: new Gtk.EntryBuffer()
         });
-        const save = new Gtk.Button({
-            label: _('Save')
-        });
 
         const histroyLabel = new Gtk.Label({
             label: _("Remember talk history"),
             halign: Gtk.Align.START
         });;
         const histroyButton = new Gtk.Switch();
+
         const vertexLabel = new Gtk.Label({
             label: _("Enable Vertex API"),
             halign: Gtk.Align.START
         });
         const VertexButton = new Gtk.Switch();
 
+        const vertexProjectLabel = new Gtk.Label({
+            label: _("Vertex Project ID"),
+            halign: Gtk.Align.START
+        });
+        const VertexProject = new Gtk.Entry({
+            buffer: new Gtk.EntryBuffer()
+        });
+        const save = new Gtk.Button({
+            label: _('Save')
+        });
         const statusLabel = new Gtk.Label({
             label: "",
             useMarkup: true,
@@ -75,10 +86,12 @@ const GeminiaiSettings = new Lang.Class({
         histroyButton.set_active(defaultLog);
         VertexButton.set_active(defaultVertex);
         apiKey.set_text(defaultKey);
+        VertexProject.set_text(defaultVertexProject);
         folderUrl.set_text(defaultFolder);
         save.connect('clicked', () => {
             SettingsSchema.set_string("gemini-api-key", apiKey.get_buffer().get_text());
             SettingsSchema.set_string("drive-folder", folderUrl.get_buffer().get_text());
+            SettingsSchema.set_string("vertex-project-id", VertexProject.get_buffer().get_text());
             SettingsSchema.set_boolean("log-history", histroyButton.state);
             SettingsSchema.set_boolean("vertex-enabled", VertexButton.state);
             statusLabel.set_markup(_("Your preferences have been saved"));
@@ -97,7 +110,10 @@ const GeminiaiSettings = new Lang.Class({
         this.main.attach(vertexLabel, 0, 3, 1, 1);
         this.main.attach(VertexButton, 2, 3, 1, 1);
 
-        this.main.attach(save, 3, 4, 1, 1);
-        this.main.attach(statusLabel, 0, 4, 1, 1);
+        this.main.attach(vertexProjectLabel, 0, 4, 1, 1);
+        this.main.attach(VertexProject, 3, 4, 1, 1);
+
+        this.main.attach(save, 3, 5, 1, 1);
+        this.main.attach(statusLabel, 0, 5, 1, 1);
     }
 });
