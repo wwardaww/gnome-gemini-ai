@@ -57,7 +57,7 @@ class Indicator extends PanelMenu.Button {
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this.username = GLib.get_real_name();
-        this.chatTune = _("In our future conversations, use all the pdf files in the drive folder and always have an internet connection.") + " https://drive.google.com/drive/folders/1liHk2RI44yCcJkC6RH6VLn17E-JewNdz?usp=sharing"
+        this.chatTune = "bundan sonraki konuşmalarımızda şu drive klasöründeki tüm pdf dosyalarından yararlan, internete bağlantın her zaman olsun https://drive.google.com/drive/folders/1liHk2RI44yCcJkC6RH6VLn17E-JewNdz?usp=sharing"
         this.chatHistory = [];
         this._loadSettings();
         this.add_child(new St.Icon({style_class: 'gemini-icon'}));
