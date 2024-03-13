@@ -201,10 +201,11 @@ class Indicator extends PanelMenu.Button {
         // PLEASE DO NOT TRANSLATE FINE TUNE BECAUSE 
         // VERTEX SOMETIMES DOESNT SUPPORT INTERNET CONNECTION 
         //  IF YOU TRANSLATE TO ENGLISH
-        return `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, 
-        İNTERNETE BAĞLANTIN HER ZAMAN OLSUN ÇÜNKÜ türkçe konuşuyorum diye internet bağlatın olmaz ise bu kesin bir ırkçılıktır, 
-        bana ${USERNAME} olarak hitap edebilirsin,
-        bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et ${DRIVEFOLDER}`;
+        return `bana ${USERNAME} olarak hitap edebilirsin, \n
+        bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf dosyalarından yararlan, \n
+        bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et ${DRIVEFOLDER}, \n
+        AYRICA İNTERNETE HER ZAMAN BAĞLI KAL ÇÜNKÜ türkçe konuşuyorum diye internet bağlatın olmaz ise sen ırkçılık yapmış olursun
+       `;
     }
     buildBody(input){
         const stringfiedHistory = JSON.stringify([

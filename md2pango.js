@@ -22,13 +22,16 @@ const m2p_sections = [
 
 // m2p_styles defines how to replace inline styled text
 const m2p_styles = [
-    { name: BOLD, re: /(^|[^\*])(\*\*)(.*)(\*\*)/g, sub: "$1<b>$3</b>" },
-    { name: BOLD, re: /(\*\*)(.*)(\*\*)([^\*]|$)/g, sub: "<b>$3</b>$4" },
-    { name: EMPH, re: /(^|[^\*])(\*)(.*)(\*)/g, sub: "$1<i>$3</i>" },
-    { name: EMPH, re: /(\*)(.*)(\*)([^\*]|$)/g, sub: "<i>$3</i>$4" }, 
-    { name: PRE, re: /(`)([^`]*)(`)/g, sub: "<tt>$2</tt>" },
-    { name: LINK, re: /(!)?(\[)(.*)(\]\()(.+)(\))/g, sub: "<a href='$5'>$3</a>" },
-    { name: LINK, re: /(!)?(\[)(.*)(\]\(\))/g, sub: "<a href='$3'>$3</a>" },
+    { name: BOLD, re: /(^|[^\*])(\*\*)(.*)(\*\*)/g, sub: "$1<b>$3 </b>" },
+    { name: BOLD, re: /(\*\*)(.*)(\*\*)([^\*]|$)/g, sub: "<b>$3 </b>$4" },
+    { name: EMPH, re: /(^|[^\*])(\*)(.*)(\*)/g, sub: "$1<i>$3 </i>" },
+    { name: EMPH, re: /(\*)(.*)(\*)([^\*]|$)/g, sub: "<i>$3 </i>$4" }, 
+    { name: PRE, re: /(`)([^`]*)(`)/g, sub: "<tt>$2 </tt>" },
+    //St.label doesnt support links plesase check doc after enabling
+    //{ name: LINK, re: /(!)?(\[)(.*)(\]\()(.+)(\))/g, sub: "<a href='$5'>$3</a>" },
+    //{ name: LINK, re: /(!)?(\[)(.*)(\]\(\))/g, sub: "<a href='$3'>$3</a>" },
+    { name: LINK, re: /(!)?(\[)(.*)(\]\()(.+)(\))/g, sub: "$3" },
+    { name: LINK, re: /(!)?(\[)(.*)(\]\(\))/g, sub: "$3" },
 ]
 
 const re_comment = /^\s*<!--.*-->\s*$/
