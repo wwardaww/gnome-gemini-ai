@@ -63,8 +63,15 @@ const GeminiaiSettings = new Lang.Class({
         const vertexLabel = new Gtk.Label({
             label: _("Enable Vertex API"),
             halign: Gtk.Align.START
-        });;
+        });
         const VertexButton = new Gtk.Switch();
+
+        const statusLabel = new Gtk.Label({
+            label: "",
+            useMarkup: true,
+            halign: Gtk.Align.START
+        });
+
         histroyButton.set_active(defaultLog);
         VertexButton.set_active(defaultVertex);
         apiKey.set_text(defaultKey);
@@ -74,6 +81,7 @@ const GeminiaiSettings = new Lang.Class({
             SettingsSchema.set_string("drive-folder", folderUrl.get_buffer().get_text());
             SettingsSchema.set_boolean("log-history", histroyButton.state);
             SettingsSchema.set_boolean("vertex-enabled", VertexButton.state);
+            statusLabel.set_markup(_("Your preferences have been saved"));
         });
 
         // col, row, 1, 1
@@ -89,6 +97,7 @@ const GeminiaiSettings = new Lang.Class({
         this.main.attach(vertexLabel, 0, 3, 1, 1);
         this.main.attach(VertexButton, 2, 3, 1, 1);
 
-        this.main.attach(save, 2, 4, 1, 1);
+        this.main.attach(save, 3, 4, 1, 1);
+        this.main.attach(statusLabel, 0, 4, 1, 1);
     }
 });
