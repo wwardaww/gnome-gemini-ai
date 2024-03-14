@@ -51,7 +51,7 @@ class Indicator extends PanelMenu.Button {
         this._settings = Prefs.SettingsSchema;
         this._settingsChangedId = this._settings.connect('changed', () => {
             this._fetchSettings();
-            if(DRIVEFOLDER != '' && ISVERTEX) {
+            if(ISVERTEX) {
                 this.chatTune = this.getTuneString();
                 this.getAireponse(undefined, this.chatTune);
             }
@@ -68,7 +68,7 @@ class Indicator extends PanelMenu.Button {
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this._loadSettings();
-        if(DRIVEFOLDER != '') {
+        if(ISVERTEX) {
             this.chatTune = this.getTuneString();
         }
         this.chatHistory = [];
@@ -113,7 +113,7 @@ class Indicator extends PanelMenu.Button {
             this.chatSection = new PopupMenu.PopupMenuSection();
             this.scrollView.add_actor(this.chatSection.actor);
             this.menu.box.add(this.scrollView);
-            if(ISVERTEX && DRIVEFOLDER != ''){
+            if(ISVERTEX){
                 this.getAireponse(undefined, this.chatTune)
             }
         });
@@ -128,7 +128,7 @@ class Indicator extends PanelMenu.Button {
         item.add(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
-        if(ISVERTEX && DRIVEFOLDER != ''){
+        if(ISVERTEX){
             this.getAireponse(undefined, this.chatTune);
         }
     }
