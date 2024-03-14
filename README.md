@@ -21,13 +21,13 @@ This Add-on is using gemini 1.0 pro model for chatting.
 ### Installing
 
 1. create billing information
-1. knowledge to gcloud-cli. ref: [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install)
-1. Shortcut for Auth: If you test the vertex api from you account it will generate Auth credential. ref:
+2. knowledge to gcloud-cli. ref: [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install)
+3. Shortcut for Auth: If you test the vertex api from you account it will generate Auth credential. ref:
    * https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=`PROJECT_ID`
    * if you create new project on Google Ai site you can learn your `PROJECT_ID` from [Google Dev Console](https://console.cloud.google.com/cloud-resource-manager)
-1. After the installization of `gloud-cli` you need to login via: `gcloud auth login`
-1. Once you login via cli you need to follow theese steps (1-3) on your local: [Vertex AI Gemini API Beginner Guide](https://cloud.google.com/vertex-ai/generative-ai/docs/start/quickstarts/quickstart-multimodal?cloudshell=true#gemini-beginner-samples-drest)
-1. Finally you can create JWT key by: `gcloud auth application-default print-access-token` on terminal
+4. After the installization of `gloud-cli` you need to login via: `gcloud auth login`
+5. Once you login via cli you need to follow theese steps (1-3) on your local: [Vertex AI Gemini API Beginner Guide](https://cloud.google.com/vertex-ai/generative-ai/docs/start/quickstarts/quickstart-multimodal?cloudshell=true#gemini-beginner-samples-drest)
+6. Finally you can create JWT key by: `gcloud auth application-default print-access-token` on terminal
    * **Note:** You need to create manually JWT, Once you set the key to `Gemini API key` on addon settings, the addon will automaticly create new JWT's when token was expired
 
 ## Additional infos
@@ -46,6 +46,6 @@ Per Unit 1K input: **0.00012$**
 
 * According the google Per unit means:
   > * The SKU's pricing tier unit quantity. For example, if the tier price is \$1 per 1000000 Bytes, then this column will show 1000000.
-  >
 
-**For referance**: when i developing this addon i send 248 request(it means 248 input and 248 output) and cost was **0.019$**
+**For reference:** When I developed this addon, I sent 248 requests (it means 248 inputs and 248 outputs) and the cost was **0.019$.**
+
