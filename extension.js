@@ -54,6 +54,10 @@ class Indicator extends PanelMenu.Button {
             if(ISVERTEX) {
                 this.chatTune = this.getTuneString();
                 this.getAireponse(undefined, this.chatTune);
+                //explained on line: 137
+                setTimeout(() => {
+                    this.getAireponse(undefined, "Hi!");
+                },1500);
             }
         });
         this._fetchSettings();
@@ -130,6 +134,10 @@ class Indicator extends PanelMenu.Button {
         this.menu.box.add(this.scrollView);
         if(ISVERTEX){
             this.getAireponse(undefined, this.chatTune);
+            //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
+            setTimeout(() => {
+                this.getAireponse(undefined, "Hi!");
+            },1500);
         }
     }
     aiResponse(text){
@@ -203,12 +211,13 @@ class Indicator extends PanelMenu.Button {
         //  IF YOU TRANSLATE TO ENGLISH
         let driveTune = '';
         if(DRIVEFOLDER != ''){
-            driveTune = `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf, excel, word, txt dosyalarından yararlan ama önce bana sor: ${DRIVEFOLDER}\n`;
+            driveTune = `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf, excel, word, txt dosyalarından yararlan ama önceliğin internet ve kendi modelin olsun: ${DRIVEFOLDER}\n`;
         }
         return `bana ${USERNAME} olarak hitap edebilirsin, \n
         ${driveTune}
         bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et, \n
-        AYRICA İNTERNETE HER ZAMAN BAĞLI KAL ÇÜNKÜ türkçe konuşuyorum diye internet bağlatın olmaz ise sen ırkçılık yapmış olursun
+        AYRICA İNTERNETE HER ZAMAN BAĞLI KAL ÇÜNKÜ türkçe konuşuyorum diye internet bağlatın olmaz ise sen ırkçılık yapmış olursun \n
+        bir sonraki konuşmamızda sana hangi dilde yazyorsam KESİNLİKLE o dilde cevap ver ben sana bundan sonra türkçe konuşmadıkça bana türkçe cevap verme,
        `;
     }
     buildBody(input){
