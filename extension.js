@@ -201,8 +201,12 @@ class Indicator extends PanelMenu.Button {
         // PLEASE DO NOT TRANSLATE FINE TUNE BECAUSE 
         // VERTEX SOMETIMES DOESNT SUPPORT INTERNET CONNECTION 
         //  IF YOU TRANSLATE TO ENGLISH
+        let driveTune = '';
+        if(DRIVEFOLDER != ''){
+            driveTune = `bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf, excel, word, txt dosyalarından yararlan ama önce bana sor: ${DRIVEFOLDER}\n`;
+        }
         return `bana ${USERNAME} olarak hitap edebilirsin, \n
-        bundan sonraki konuşmalarımızda şu drive klasörünündeki tüm pdf, excel, word, txt dosyalarından yararlan ama önce bana sor: ${DRIVEFOLDER}\n
+        ${driveTune}
         bulunduğum yeri ${LOCATION} ve tarihi ${date} olarak kabul et, \n
         AYRICA İNTERNETE HER ZAMAN BAĞLI KAL ÇÜNKÜ türkçe konuşuyorum diye internet bağlatın olmaz ise sen ırkçılık yapmış olursun
        `;
