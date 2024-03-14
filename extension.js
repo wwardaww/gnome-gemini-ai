@@ -255,10 +255,10 @@ class Extension {
         let url = "https://thisipcan.cyou/json";
         let _httpSession = new Soup.Session();
         let message = Soup.Message.new('GET', url);
+        this._indicator = new Indicator();
         _httpSession.queue_message(message, (_httpSession, message) => {
             const res = JSON.parse(message.response_body.data);
             LOCATION = `${res.countryName}/${res.cityName}`;
-            this._indicator = new Indicator();
             Main.panel.addToStatusArea(this._uuid, this._indicator);
         });
         
