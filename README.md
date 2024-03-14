@@ -35,6 +35,7 @@ Vertex has internet access and it can be search on internet but Gemini API has n
 `GCP > Cloud AI and Industry Solutions > Vertex AI Model Garden > Language > Gemini > Gemini Pro`
 
 Per Unit 1K output: **0.00036$**
+
 Per Unit 1K input: **0.00012$**
 
 * According the google Per unit means:
