@@ -1,6 +1,6 @@
 {
-  "name": "Gemini AI",
-  "description": "Gemini Aı for Ubuntu",
+  "name": "Gemini AI for Gnome",
+  "description": "This Add-on is using gemini 1.0 pro model for chatting.",
   "uuid": "geminiaiubuntu@arda.com",
   "settings-schema": "org.gnome.shell.extensions.geminiaiubuntu",
   "shell-version": [
