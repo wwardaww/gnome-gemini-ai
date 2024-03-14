@@ -127,8 +127,7 @@ function convert(text) {
 
         // escape all non-verbatim text
         let result = is_code ? line : escape_line(line)
-
-        for ({ re, sub, name } of m2p_sections) {
+        m2p_sections.forEach(({ re, sub, name }) => {
             if (line.match(re)) {
                 if (name === CODE) {
                     if (!is_code) {
@@ -164,7 +163,7 @@ function convert(text) {
                     }
                 }
             }
-        }
+        })
 
         if (is_code && !code_start) {
             code_lines.push(result)
@@ -213,6 +212,9 @@ const readFile = (f) => {
     return fs.readFileSync(f, 'utf8')
 }
 
+export function convertMD(text) {
+    return convert(text)
+}
 let __is_nodejs_main = false
 try {
     // node.js specific checks and exports

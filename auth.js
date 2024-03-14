@@ -1,6 +1,8 @@
-const { GLib } = imports.gi;
+import GLib from 'gi://GLib';
 
- function generateAPIKey() {
-    let key = GLib.spawn_command_line_sync("gcloud auth application-default print-access-token")[1];
-    return key.toString().replace(/(\r\n|\n|\r)/gm, "");
+
+export function generateAPIKey(){
+    let keyStream = GLib.spawn_command_line_sync("gcloud auth application-default print-access-token").toString();
+    const keyArray = keyStream.split(",");
+    return keyArray[1].replace(/(\r\n|\n|\r)/gm, "");
 }
