@@ -180,7 +180,7 @@ class Indicator extends PanelMenu.Button {
         message.set_request('application/json', 2,body);
         _httpSession.queue_message(message, (_httpSession, message) => {
             const res = JSON.parse(message.response_body.data);
-            log(message.response_body.data);
+            //log(message.response_body.data);
             if(res.error?.code == 401 && newKey == undefined){
                 let key = Auth.generateAPIKey();
                 this.getAireponse(inputItem, question,key);
