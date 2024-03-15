@@ -1,5 +1,5 @@
 import Gtk from 'gi://Gtk';
-import Lang from 'gi://Lang';
+import Adw from 'gi://Adw';
 
 import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
@@ -9,14 +9,15 @@ export default class ClipboardIndicatorPreferences extends ExtensionPreferences 
         window._settings = this.getSettings();
         const settingsUI = new GeminiSettings(window._settings);
         const page = new Adw.PreferencesPage();
-        page.add(settingsUI.main);
+        page.add(settingsUI.ui);
         window.add(page);
     }
 }
 
-class GeminiSettings extends Lang.Class(){
+class GeminiSettings {
     constructor (schema) {
         this.schema = schema;
+        this.ui =  new Adw.PreferencesGroup({ title: _('Settings:') });
         this.main = new Gtk.Grid({
             margin_top: 10,
             margin_bottom: 10,
@@ -114,5 +115,7 @@ class GeminiSettings extends Lang.Class(){
 
         this.main.attach(save, 2, 5, 1, 1);
         this.main.attach(statusLabel, 0, 6, 4, 1);
+
+        this.ui.add(this.main);
     }
 }

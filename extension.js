@@ -22,7 +22,6 @@ import St from 'gi://St';
 import GObject from 'gi://GObject';
 import Soup from 'gi://Soup';
 import GLib from 'gi://GLib';
-import Gio from 'gi://Gio';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
@@ -32,7 +31,6 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {convertMD} from "./md2pango.js";
 import {generateAPIKey} from "./auth.js";
 
-const GETTEXT_DOMAIN = 'geminiaiubuntu';
 let GEMINIAPIKEY = "";
 let DRIVEFOLDER = "";
 let VERTEXPROJECTID = "";
@@ -47,16 +45,19 @@ class Gemini extends PanelMenu.Button {
     _loadSettings () {
         this._settingsChangedId = this.extension.settings.connect('changed', () => {
             this._fetchSettings();
-            if(ISVERTEX) {
-                this.chatTune = this.getTuneString();
-                this.getAireponse(undefined, this.chatTune);
-                //explained on line: 137
-                setTimeout(() => {
-                    this.getAireponse(undefined, "Hi!");
-                },1500);
-            }
+            this._initFirstResponse();
         });
         this._fetchSettings();
+    }
+    _initFirstResponse(){
+        if(ISVERTEX) {
+            this.chatTune = this.getTuneString();
+            this.getAireponse(undefined, this.chatTune);
+            //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
+            setTimeout(() => {
+                this.getAireponse(undefined, "Hi!");
+            },1500);
+        }
     }
     _fetchSettings () {
         const { settings } = this.extension;
@@ -71,9 +72,6 @@ class Gemini extends PanelMenu.Button {
         log("colorScheme: " + this.colorScheme);
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this._loadSettings();
-        if(ISVERTEX) {
-            this.chatTune = this.getTuneString();
-        }
         this.chatHistory = [];
         let hbox = new St.BoxLayout({
             style_class: 'panel-status-menu-box'
@@ -139,13 +137,7 @@ class Gemini extends PanelMenu.Button {
         item.add(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
-        if(ISVERTEX){
-            this.getAireponse(undefined, this.chatTune);
-            //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
-            setTimeout(() => {
-                this.getAireponse(undefined, "Hi!");
-            },1500);
-        }
+        this._initFirstResponse();
     }
     aiResponse(text){
         let aiResponse = _("<b>Gemini: </b> Thinking...");
@@ -262,15 +254,14 @@ export default class GeminiExtension extends Extension {
             openSettings: this.openPreferences,
             uuid: this.uuid
         });
+        Main.panel.addToStatusArea("geminiAiUbuntu", this._gemini, 1);
         _httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (_httpSession, result) => {
-            if (message.get_status() === Soup.Status.OK) {
-                let bytes = _httpSession.send_and_read_finish(result);
-                let decoder = new TextDecoder('utf-8');
-                let response = decoder.decode(bytes.get_data());
-                const res = JSON.parse(response);
-                LOCATION = `${res.countryName}/${res.cityName}`;
-                Main.panel.addToStatusArea("geminiAiUbuntu", this._gemini, 1);
-            }
+            let bytes = _httpSession.send_and_read_finish(result);
+            let decoder = new TextDecoder('utf-8');
+            let response = decoder.decode(bytes.get_data());
+            const res = JSON.parse(response);
+            LOCATION = `${res.countryName}/${res.cityName}`;
+            this._gemini._initFirstResponse();
         });
         
     }
