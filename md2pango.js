@@ -226,7 +226,6 @@ if (__is_nodejs_main) {
     // running in node.js called from the CLI
     let args = process.argv.slice(2)
     if (args.length == 0 || args.find((a) => a == '-h')) {
-        console.log(`Usage: ${process.argv[1]} FILE [FILE...]`)
         process.exit(0)
     }
     args.forEach((f) => process.stdout.write(convert(readFile(f))))

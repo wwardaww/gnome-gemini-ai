@@ -54,9 +54,10 @@ class Gemini extends PanelMenu.Button {
             this.chatTune = this.getTuneString();
             this.getAireponse(undefined, this.chatTune);
             //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
-            setTimeout(() => {
+            this.afterTune = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
                 this.getAireponse(undefined, "Hi!");
-            },1500);
+                return GLib.SOURCE_CONTINUE;
+            });
         }
     }
     _fetchSettings () {
@@ -267,6 +268,10 @@ export default class GeminiExtension extends Extension {
     }
 
     disable() {
+        if(this._gemini.afterTune){
+            GLib.Source.remove(this._gemini.afterTune);
+            this._gemini.afterTune = null;
+        }
         this._gemini.destroy();
         this._gemini = null;
     }
