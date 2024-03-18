@@ -176,10 +176,12 @@ class Gemini extends PanelMenu.Button {
         var body = this.buildBody(question);
         let message = Soup.Message.new('POST', url);
         let bytes  = GLib.Bytes.new(body);
-        message.request_headers.append(
-            'Authorization',
-            `Bearer ${GEMINIAPIKEY}`
-        )
+        if(VERTEXPROJECTID != "" && ISVERTEX){
+            message.request_headers.append(
+                'Authorization',
+                `Bearer ${newKey}`
+            )
+        }
         message.set_request_body_from_bytes('application/json', bytes);
         _httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (_httpSession, result) => {
             let bytes = _httpSession.send_and_read_finish(result);
@@ -187,12 +189,13 @@ class Gemini extends PanelMenu.Button {
             let response = decoder.decode(bytes.get_data());
             let res = JSON.parse(response);
             // Inspecting the response for dev purpose
+            log(url)
             log(response);
             if(res.error?.code != 401 && res.error !== undefined){
                 inputItem?.label.clutter_text.set_markup(response);
                 return;
             }
-            if(res.error?.code == 401 && newKey == undefined){
+            if(res.error?.code == 401 && newKey == undefined && ISVERTEX){
                 let key = generateAPIKey();
                 this.getAireponse(inputItem, question,key);
             } else {
