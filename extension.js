@@ -54,10 +54,9 @@ class Gemini extends PanelMenu.Button {
             this.chatTune = this.getTuneString();
             this.getAireponse(undefined, this.chatTune);
             //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
-            this.afterTune = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 2, () => {
+            this.afterTune = setTimeout(() => {
                 this.getAireponse(undefined, "Hi!", undefined, true);
-                return GLib.SOURCE_REMOVE;
-            });
+            }, 1500);
         }
     }
     _fetchSettings () {
@@ -69,6 +68,7 @@ class Gemini extends PanelMenu.Button {
         ISVERTEX               = settings.get_boolean("vertex-enabled");
     }
     _init(extension) {
+        this.keyLoopBind = 0;
         this.extension = extension;
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this._loadSettings();
@@ -123,7 +123,7 @@ class Gemini extends PanelMenu.Button {
             this.scrollView.add_actor(this.chatSection.actor);
             this.menu.box.add(this.scrollView);
             if(ISVERTEX){
-                this.getAireponse(undefined, this.chatTune)
+                this._initFirstResponse()
             }
         });
         settingsButton.connect('clicked', (self) => {
@@ -179,7 +179,7 @@ class Gemini extends PanelMenu.Button {
         if(VERTEXPROJECTID != "" && ISVERTEX){
             message.request_headers.append(
                 'Authorization',
-                `Bearer ${newKey}`
+                `Bearer ${GEMINIAPIKEY}`
             )
         }
         message.set_request_body_from_bytes('application/json', bytes);
@@ -196,8 +196,11 @@ class Gemini extends PanelMenu.Button {
                 return;
             }
             if(res.error?.code == 401 && newKey == undefined && ISVERTEX){
-                let key = generateAPIKey();
-                this.getAireponse(inputItem, question,key);
+                this.keyLoopBind++;
+                if(this.keyLoopBind < 3){
+                    let key = generateAPIKey();
+                    this.getAireponse(inputItem, question,key);
+                }
             } else {
                 let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
                 if(RECURSIVETALK) {
@@ -250,7 +253,7 @@ class Gemini extends PanelMenu.Button {
 
     destroyLoop() {
         if (this.afterTune) {
-            GLib.Source.remove(this.afterTune);
+            clearTimeout(this.afterTune);
             this.afterTune = null;
         }
     }
