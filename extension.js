@@ -185,6 +185,10 @@ class Gemini extends PanelMenu.Button {
             let res = JSON.parse(response);
             // Inspecting the response for dev purpose
             //log(response);
+            if(res.error?.code != 401 && res.error !== undefined){
+                inputItem.label.clutter_text.set_markup(response);
+                return;
+            }
             if(res.error?.code == 401 && newKey == undefined){
                 let key = generateAPIKey();
                 this.getAireponse(inputItem, question,key);
