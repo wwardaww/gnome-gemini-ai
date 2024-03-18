@@ -54,7 +54,7 @@ class Gemini extends PanelMenu.Button {
             this.chatTune = this.getTuneString();
             this.getAireponse(undefined, this.chatTune);
             //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
-            this.afterTune = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
+            this.afterTune = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 2, () => {
                 this.getAireponse(undefined, "Hi!");
                 return GLib.SOURCE_CONTINUE;
             });
@@ -70,7 +70,6 @@ class Gemini extends PanelMenu.Button {
     }
     _init(extension) {
         this.extension = extension;
-        log("colorScheme: " + this.colorScheme);
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this._loadSettings();
         this.chatHistory = [];
@@ -180,14 +179,12 @@ class Gemini extends PanelMenu.Button {
         )
         message.set_request_body_from_bytes('application/json', bytes);
         _httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (_httpSession, result) => {
-            log("BURADA");
-            log(message.get_status())
-            log(GEMINIAPIKEY)
             let bytes = _httpSession.send_and_read_finish(result);
             let decoder = new TextDecoder('utf-8');
             let response = decoder.decode(bytes.get_data());
             let res = JSON.parse(response);
-            log(response);
+            // Inspecting the response for dev purpose
+            //log(response);
             if(res.error?.code == 401 && newKey == undefined){
                 let key = generateAPIKey();
                 this.getAireponse(inputItem, question,key);
@@ -240,6 +237,14 @@ class Gemini extends PanelMenu.Button {
     openSettings () {
             this.extension.openSettings();
         }
+
+    destroy() {
+        if (this.afterTune) {
+            GLib.Source.remove(this.afterTune);
+            this.afterTune = null;
+        }
+        super.destroy();
+    }
 });
 
 
@@ -268,10 +273,6 @@ export default class GeminiExtension extends Extension {
     }
 
     disable() {
-        if(this._gemini.afterTune){
-            GLib.Source.remove(this._gemini.afterTune);
-            this._gemini.afterTune = null;
-        }
         this._gemini.destroy();
         this._gemini = null;
     }
