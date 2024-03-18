@@ -55,8 +55,8 @@ class Gemini extends PanelMenu.Button {
             this.getAireponse(undefined, this.chatTune);
             //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
             this.afterTune = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 2, () => {
-                this.getAireponse(undefined, "Hi!");
-                return GLib.SOURCE_CONTINUE;
+                this.getAireponse(undefined, "Hi!", undefined, true);
+                return GLib.SOURCE_REMOVE;
             });
         }
     }
@@ -160,7 +160,10 @@ class Gemini extends PanelMenu.Button {
        
         this.getAireponse(aiResponseItem, text);
     }
-    getAireponse(inputItem, question, newKey = undefined){
+    getAireponse(inputItem, question, newKey = undefined, destroyLoop = false){
+        if(destroyLoop){
+            this.destroyLoop();
+        }
         let _httpSession = new Soup.Session();
         let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINIAPIKEY}`;
         if(VERTEXPROJECTID != "" && ISVERTEX){
@@ -184,9 +187,9 @@ class Gemini extends PanelMenu.Button {
             let response = decoder.decode(bytes.get_data());
             let res = JSON.parse(response);
             // Inspecting the response for dev purpose
-            //log(response);
+            log(response);
             if(res.error?.code != 401 && res.error !== undefined){
-                inputItem.label.clutter_text.set_markup(response);
+                inputItem?.label.clutter_text.set_markup(response);
                 return;
             }
             if(res.error?.code == 401 && newKey == undefined){
@@ -242,11 +245,14 @@ class Gemini extends PanelMenu.Button {
             this.extension.openSettings();
         }
 
-    destroy() {
+    destroyLoop() {
         if (this.afterTune) {
             GLib.Source.remove(this.afterTune);
             this.afterTune = null;
         }
+    }
+    destroy() {
+        this.destroyLoop();
         super.destroy();
     }
 });
