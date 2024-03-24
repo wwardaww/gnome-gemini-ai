@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 04:28+0300\n"
+"POT-Creation-Date: 2024-03-18 07:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,48 +17,52 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:69
+#: extension.js:73
 msgid "Gemini ai for Ubuntu"
 msgstr ""
 
-#: extension.js:92
+#: extension.js:101
 msgid "What's on your mind?"
 msgstr ""
 
-#: extension.js:136
+#: extension.js:143
 msgid "<b>Gemini: </b> Thinking..."
 msgstr ""
 
-#: prefs.js:43
+#: prefs.js:19
+msgid "Settings:"
+msgstr ""
+
+#: prefs.js:37
 msgid "Geminiai API Key"
 msgstr ""
 
-#: prefs.js:50
+#: prefs.js:44
 msgid "How to get API key?"
 msgstr ""
 
-#: prefs.js:55
+#: prefs.js:49
 msgid ""
 "Drive Folder for Vertex \n"
 " (optional)"
 msgstr ""
 
-#: prefs.js:63
+#: prefs.js:57
 msgid "Remember talk history"
 msgstr ""
 
-#: prefs.js:69
+#: prefs.js:63
 msgid "Enable Vertex API"
 msgstr ""
 
-#: prefs.js:75
+#: prefs.js:69
 msgid "Vertex Project ID"
 msgstr ""
 
-#: prefs.js:82
+#: prefs.js:76
 msgid "Save"
 msgstr ""
 
-#: prefs.js:101
+#: prefs.js:95
 msgid "Your preferences have been saved"
 msgstr ""

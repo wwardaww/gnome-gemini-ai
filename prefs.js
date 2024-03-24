@@ -1,28 +1,22 @@
-const GObject = imports.gi.GObject;
-const Gtk = imports.gi.Gtk;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Extension = imports.misc.extensionUtils.getCurrentExtension();
-const Lang = imports.lang;
+import Gtk from 'gi://Gtk';
+import Adw from 'gi://Adw';
 
-const Gettext = imports.gettext;
-const _ = Gettext.domain('geminiaiubuntu').gettext;
-const SCHEMA_NAME = 'org.gnome.shell.extensions.geminiaiubuntu';
+import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-
-var SettingsSchema = ExtensionUtils.getSettings(SCHEMA_NAME);
-function init() {
-    let localeDir = Extension.dir.get_child('locale');
-    if (localeDir.query_exists(null))
-        Gettext.bindtextdomain('geminiaiubuntu', localeDir.get_path());
-}
-function buildPrefsWidget() {
-    const geminiAi = new GeminiaiSettings();
-    return geminiAi.main;
+export default class ClipboardIndicatorPreferences extends ExtensionPreferences {
+    fillPreferencesWindow (window) {
+        window._settings = this.getSettings();
+        const settingsUI = new GeminiSettings(window._settings);
+        const page = new Adw.PreferencesPage();
+        page.add(settingsUI.ui);
+        window.add(page);
+    }
 }
 
-const GeminiaiSettings = new Lang.Class({
-    Name: 'Geminiai.Prefs.Widget',
-    _init: function() {
+class GeminiSettings {
+    constructor (schema) {
+        this.schema = schema;
+        this.ui =  new Adw.PreferencesGroup({ title: _('Settings:') });
         this.main = new Gtk.Grid({
             margin_top: 10,
             margin_bottom: 10,
@@ -33,11 +27,11 @@ const GeminiaiSettings = new Lang.Class({
             column_homogeneous: false,
             row_homogeneous: false
         });
-        const defaultKey = SettingsSchema.get_string("gemini-api-key");
-        const defaultFolder = SettingsSchema.get_string("drive-folder");
-        const defaultLog = SettingsSchema.get_boolean("log-history")
-        const defaultVertex = SettingsSchema.get_boolean("vertex-enabled")
-        const defaultVertexProject = SettingsSchema.get_string("vertex-project-id")
+        const defaultKey = this.schema.get_string("gemini-api-key");
+        const defaultFolder = this.schema.get_string("drive-folder");
+        const defaultLog = this.schema.get_boolean("log-history")
+        const defaultVertex = this.schema.get_boolean("vertex-enabled")
+        const defaultVertexProject = this.schema.get_string("vertex-project-id")
 
         const label = new Gtk.Label({
             label: _("Geminiai API Key"),
@@ -93,11 +87,11 @@ const GeminiaiSettings = new Lang.Class({
         VertexProject.set_text(defaultVertexProject);
         folderUrl.set_text(defaultFolder);
         save.connect('clicked', () => {
-            SettingsSchema.set_string("gemini-api-key", apiKey.get_buffer().get_text());
-            SettingsSchema.set_string("drive-folder", folderUrl.get_buffer().get_text());
-            SettingsSchema.set_string("vertex-project-id", VertexProject.get_buffer().get_text());
-            SettingsSchema.set_boolean("log-history", histroyButton.state);
-            SettingsSchema.set_boolean("vertex-enabled", VertexButton.state);
+            this.schema.set_string("gemini-api-key", apiKey.get_buffer().get_text());
+            this.schema.set_string("drive-folder", folderUrl.get_buffer().get_text());
+            this.schema.set_string("vertex-project-id", VertexProject.get_buffer().get_text());
+            this.schema.set_boolean("log-history", histroyButton.state);
+            this.schema.set_boolean("vertex-enabled", VertexButton.state);
             statusLabel.set_markup(_("Your preferences have been saved"));
         });
 
@@ -120,5 +114,7 @@ const GeminiaiSettings = new Lang.Class({
 
         this.main.attach(save, 2, 5, 1, 1);
         this.main.attach(statusLabel, 0, 6, 4, 1);
+
+        this.ui.add(this.main);
     }
-});
+}

@@ -18,23 +18,18 @@
 
 /* exported init */
 
-const GETTEXT_DOMAIN = 'geminiaiubuntu';
-
-const { GObject, St, Soup, GLib} = imports.gi;
-
-const ExtensionUtils = imports.misc.extensionUtils;
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-
-
-const _ = ExtensionUtils.gettext;
-const Me = ExtensionUtils.getCurrentExtension();
-const md2pango = Me.imports.md2pango;
-const Prefs = Me.imports.prefs;
-const Auth = Me.imports.auth;
+import St from 'gi://St';
+import GObject from 'gi://GObject';
+import Soup from 'gi://Soup';
+import GLib from 'gi://GLib';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 
+import {convertMD} from "./md2pango.js";
+import {generateAPIKey} from "./auth.js";
 
 let GEMINIAPIKEY = "";
 let DRIVEFOLDER = "";
@@ -45,39 +40,49 @@ let RECURSIVETALK = false;
 let ISVERTEX = false;
 
 
-const Indicator = GObject.registerClass(
-class Indicator extends PanelMenu.Button {
+const Gemini = GObject.registerClass(
+class Gemini extends PanelMenu.Button {
     _loadSettings () {
-        this._settings = Prefs.SettingsSchema;
-        this._settingsChangedId = this._settings.connect('changed', () => {
+        this._settingsChangedId = this.extension.settings.connect('changed', () => {
             this._fetchSettings();
-            if(ISVERTEX) {
-                this.chatTune = this.getTuneString();
-                this.getAireponse(undefined, this.chatTune);
-                //explained on line: 137
-                setTimeout(() => {
-                    this.getAireponse(undefined, "Hi!");
-                },1500);
-            }
+            this._initFirstResponse();
         });
         this._fetchSettings();
     }
-    _fetchSettings () {
-        GEMINIAPIKEY           = this._settings.get_string("gemini-api-key");
-        DRIVEFOLDER            = this._settings.get_string("drive-folder");
-        VERTEXPROJECTID        = this._settings.get_string("vertex-project-id");
-        RECURSIVETALK          = this._settings.get_boolean("log-history");
-        ISVERTEX               = this._settings.get_boolean("vertex-enabled");
-    }
-    _init() {
-        super._init(0.0, _('Gemini ai for Ubuntu'));
-        this._loadSettings();
+    _initFirstResponse(){
         if(ISVERTEX) {
             this.chatTune = this.getTuneString();
+            this.getAireponse(undefined, this.chatTune);
+            //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
+            this.afterTune = setTimeout(() => {
+                this.getAireponse(undefined, "Hi!", undefined, true);
+            }, 1500);
         }
+    }
+    _fetchSettings () {
+        const { settings } = this.extension;
+        GEMINIAPIKEY           = settings.get_string("gemini-api-key");
+        DRIVEFOLDER            = settings.get_string("drive-folder");
+        VERTEXPROJECTID        = settings.get_string("vertex-project-id");
+        RECURSIVETALK          = settings.get_boolean("log-history");
+        ISVERTEX               = settings.get_boolean("vertex-enabled");
+    }
+    _init(extension) {
+        this.keyLoopBind = 0;
+        this.extension = extension;
+        super._init(0.0, _('Gemini ai for Ubuntu'));
+        this._loadSettings();
         this.chatHistory = [];
-        
-        this.add_child(new St.Icon({style_class: 'gemini-icon'}));
+        let hbox = new St.BoxLayout({
+            style_class: 'panel-status-menu-box'
+        });
+        this.hbox = hbox;
+
+        this.icon = new St.Icon({
+            style_class: 'gemini-icon'
+        });
+        hbox.add_child(this.icon);
+        this.add_child(hbox);
         this.menu.actor.style_class = "m-w-100"
       
         let item = new PopupMenu.PopupBaseMenuItem({
@@ -99,10 +104,10 @@ class Indicator extends PanelMenu.Button {
             y_expand: true
         });
         let clearButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({style_class: 'trash-icon'})
+            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'user-trash-symbolic', style_class: 'trash-icon'})
         });
         let settingsButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({style_class: 'settings-icon'})
+            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'preferences-system-symbolic', style_class: 'settings-icon'})
         });
         this.scrollView.add_child(this.chatSection.actor);
         searchEntry.clutter_text.connect('activate', (actor) => {
@@ -118,7 +123,7 @@ class Indicator extends PanelMenu.Button {
             this.scrollView.add_child(this.chatSection.actor);
             this.menu.box.add_child(this.scrollView);
             if(ISVERTEX){
-                this.getAireponse(undefined, this.chatTune)
+                this._initFirstResponse()
             }
         });
         settingsButton.connect('clicked', (self) => {
@@ -131,14 +136,8 @@ class Indicator extends PanelMenu.Button {
         item.add_child(clearButton);
         item.add_child(settingsButton);
         this.menu.addMenuItem(item);
-        this.menu.box.add_child(this.scrollView);
-        if(ISVERTEX){
-            this.getAireponse(undefined, this.chatTune);
-            //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
-            setTimeout(() => {
-                this.getAireponse(undefined, "Hi!");
-            },1500);
-        }
+        this.menu.box.add(this.scrollView);
+        this._initFirstResponse();
     }
     aiResponse(text){
         let aiResponse = _("<b>Gemini: </b> Thinking...");
@@ -152,7 +151,7 @@ class Indicator extends PanelMenu.Button {
         aiResponseItem.style_class += " m-w-100";
 
         aiResponseItem.connect('activate', (self) => {
-            St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, aiResponseItem.label.text);
+            this.extension.clipboard.set_text(St.ClipboardType.CLIPBOARD, aiResponseItem.label.text);
         });
         
         this.chatSection.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
@@ -161,29 +160,47 @@ class Indicator extends PanelMenu.Button {
        
         this.getAireponse(aiResponseItem, text);
     }
-    getAireponse(inputItem, question, newKey = undefined){
+    getAireponse(inputItem, question, newKey = undefined, destroyLoop = false){
+        if(destroyLoop){
+            this.destroyLoop();
+        }
         let _httpSession = new Soup.Session();
         let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINIAPIKEY}`;
         if(VERTEXPROJECTID != "" && ISVERTEX){
             url = `https://us-east4-aiplatform.googleapis.com/v1/projects/${VERTEXPROJECTID}/locations/us-east4/publishers/google/models/gemini-1.0-pro:generateContent`;
         }
         if(newKey != undefined){
-            this._settings.set_string("gemini-api-key", newKey);
+            this.extension.settings.set_string("gemini-api-key", newKey);
             GEMINIAPIKEY = newKey;
         }
         var body = this.buildBody(question);
         let message = Soup.Message.new('POST', url);
-        message.request_headers.append(
-            'Authorization',
-            `Bearer ${GEMINIAPIKEY}`
-        )
-        message.set_request('application/json', 2,body);
-        _httpSession.queue_message(message, (_httpSession, message) => {
-            const res = JSON.parse(message.response_body.data);
-            //log(message.response_body.data);
-            if(res.error?.code == 401 && newKey == undefined){
-                let key = Auth.generateAPIKey();
-                this.getAireponse(inputItem, question,key);
+        let bytes  = GLib.Bytes.new(body);
+        if(VERTEXPROJECTID != "" && ISVERTEX){
+            message.request_headers.append(
+                'Authorization',
+                `Bearer ${GEMINIAPIKEY}`
+            )
+        }
+        message.set_request_body_from_bytes('application/json', bytes);
+        _httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (_httpSession, result) => {
+            let bytes = _httpSession.send_and_read_finish(result);
+            let decoder = new TextDecoder('utf-8');
+            let response = decoder.decode(bytes.get_data());
+            let res = JSON.parse(response);
+            // Inspecting the response for dev purpose
+            log(url)
+            log(response);
+            if(res.error?.code != 401 && res.error !== undefined){
+                inputItem?.label.clutter_text.set_markup(response);
+                return;
+            }
+            if(res.error?.code == 401 && newKey == undefined && ISVERTEX){
+                this.keyLoopBind++;
+                if(this.keyLoopBind < 3){
+                    let key = generateAPIKey();
+                    this.getAireponse(inputItem, question,key);
+                }
             } else {
                 let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
                 if(RECURSIVETALK) {
@@ -197,7 +214,7 @@ class Indicator extends PanelMenu.Button {
                     });
                 }
                 if(inputItem != undefined){
-                    let htmlResponse = md2pango.convert(aiResponse);
+                    let htmlResponse = convertMD(aiResponse);
                     inputItem.label.clutter_text.set_markup(htmlResponse);
                 }
             }
@@ -231,45 +248,48 @@ class Indicator extends PanelMenu.Button {
         return `{"contents":${stringfiedHistory}}`
     }
     openSettings () {
-        if (typeof ExtensionUtils.openPrefs === 'function') {
-            ExtensionUtils.openPrefs();
-        } else {
-            Util.spawn([
-                "gnome-shell-extension-prefs",
-                Me.uuid
-            ]);
+            this.extension.openSettings();
         }
+
+    destroyLoop() {
+        if (this.afterTune) {
+            clearTimeout(this.afterTune);
+            this.afterTune = null;
+        }
+    }
+    destroy() {
+        this.destroyLoop();
+        super.destroy();
     }
 });
 
 
 
-class Extension {
-    constructor(uuid) {
-        this._uuid = uuid;
-
-        ExtensionUtils.initTranslations(GETTEXT_DOMAIN);
-    }
-
+export default class GeminiExtension extends Extension {
     enable() {
         let url = "https://thisipcan.cyou/json";
         let _httpSession = new Soup.Session();
         let message = Soup.Message.new('GET', url);
-        this._indicator = new Indicator();
-        _httpSession.queue_message(message, (_httpSession, message) => {
-            const res = JSON.parse(message.response_body.data);
+        this._gemini = new Gemini({
+            clipboard: St.Clipboard.get_default(),
+            settings: this.getSettings(),
+            openSettings: this.openPreferences,
+            uuid: this.uuid
+        });
+        Main.panel.addToStatusArea("geminiAiUbuntu", this._gemini, 1);
+        _httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (_httpSession, result) => {
+            let bytes = _httpSession.send_and_read_finish(result);
+            let decoder = new TextDecoder('utf-8');
+            let response = decoder.decode(bytes.get_data());
+            const res = JSON.parse(response);
             LOCATION = `${res.countryName}/${res.cityName}`;
-            Main.panel.addToStatusArea(this._uuid, this._indicator);
+            this._gemini._initFirstResponse();
         });
         
     }
 
     disable() {
-        this._indicator.destroy();
-        this._indicator = null;
+        this._gemini.destroy();
+        this._gemini = null;
     }
-}
-
-function init(meta) {
-    return new Extension(meta.uuid);
 }
