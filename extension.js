@@ -109,7 +109,7 @@ class Gemini extends PanelMenu.Button {
         let settingsButton = new St.Button({
             can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'preferences-system-symbolic', style_class: 'settings-icon'})
         });
-        this.scrollView.add_actor(this.chatSection.actor);
+        this.scrollView.add_child(this.chatSection.actor);
         searchEntry.clutter_text.connect('activate', (actor) => {
             this.aiResponse(actor.text);
             searchEntry.clutter_text.set_text("");
@@ -120,11 +120,10 @@ class Gemini extends PanelMenu.Button {
             this.chatHistory = [];
             this.menu.box.remove_child(this.scrollView);
             this.chatSection = new PopupMenu.PopupMenuSection();
-            this.scrollView.add_actor(this.chatSection.actor);
-            this.menu.box.add(this.scrollView);
-            if(ISVERTEX){
-                this._initFirstResponse()
-            }
+            this.scrollView.add_child(this.chatSection.actor);
+            this.menu.box.add_child(this.scrollView);
+            this._initFirstResponse()
+            
         });
         settingsButton.connect('clicked', (self) => {
             this.openSettings();
@@ -132,9 +131,9 @@ class Gemini extends PanelMenu.Button {
         if(GEMINIAPIKEY == ""){
             this.openSettings();
         }
-        item.add(searchEntry);
-        item.add(clearButton);
-        item.add(settingsButton);
+        item.add_child(searchEntry);
+        item.add_child(clearButton);
+        item.add_child(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
         this._initFirstResponse();
