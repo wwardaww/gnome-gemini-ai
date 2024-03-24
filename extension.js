@@ -73,7 +73,6 @@ class Gemini extends PanelMenu.Button {
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this._loadSettings();
         this.chatHistory = [];
-        //this._webview = new WebKit.WebView();
         let hbox = new St.BoxLayout({
             style_class: 'panel-status-menu-box'
         });
@@ -110,7 +109,7 @@ class Gemini extends PanelMenu.Button {
         let settingsButton = new St.Button({
             can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'preferences-system-symbolic', style_class: 'settings-icon'})
         });
-        this.scrollView.add_child(this.chatSection.actor);
+        this.scrollView.add_actor(this.chatSection.actor);
         searchEntry.clutter_text.connect('activate', (actor) => {
             this.aiResponse(actor.text);
             searchEntry.clutter_text.set_text("");
@@ -121,8 +120,8 @@ class Gemini extends PanelMenu.Button {
             this.chatHistory = [];
             this.menu.box.remove_child(this.scrollView);
             this.chatSection = new PopupMenu.PopupMenuSection();
-            this.scrollView.add_child(this.chatSection.actor);
-            this.menu.box.add_child(this.scrollView);
+            this.scrollView.add_actor(this.chatSection.actor);
+            this.menu.box.add(this.scrollView);
             if(ISVERTEX){
                 this._initFirstResponse()
             }
@@ -133,9 +132,9 @@ class Gemini extends PanelMenu.Button {
         if(GEMINIAPIKEY == ""){
             this.openSettings();
         }
-        item.add_child(searchEntry);
-        item.add_child(clearButton);
-        item.add_child(settingsButton);
+        item.add(searchEntry);
+        item.add(clearButton);
+        item.add(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
         this._initFirstResponse();

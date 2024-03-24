@@ -5,7 +5,7 @@
   "uuid": "geminiaiubuntu@arda.com",
   "settings-schema": "org.gnome.shell.extensions.geminiaiubuntu",
   "shell-version": [
-    "46"
+    "45"
   ],
-  "version": 14
+  "version": 13
 }
