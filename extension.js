@@ -73,7 +73,6 @@ class Gemini extends PanelMenu.Button {
         super._init(0.0, _('Gemini ai for Ubuntu'));
         this._loadSettings();
         this.chatHistory = [];
-        //this._webview = new WebKit.WebView();
         let hbox = new St.BoxLayout({
             style_class: 'panel-status-menu-box'
         });
@@ -133,11 +132,9 @@ class Gemini extends PanelMenu.Button {
         if(GEMINIAPIKEY == ""){
             this.openSettings();
         }
-        //_webview.load_alternate_html("<b>Hi!</b>", "text", null);
         item.add(searchEntry);
         item.add(clearButton);
         item.add(settingsButton);
-       // item.add(this._webview);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
         this._initFirstResponse();
