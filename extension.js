@@ -104,7 +104,7 @@ class Indicator extends PanelMenu.Button {
         let settingsButton = new St.Button({
             can_focus: true,  toggle_mode: true, child: new St.Icon({style_class: 'settings-icon'})
         });
-        this.scrollView.add_actor(this.chatSection.actor);
+        this.scrollView.add_child(this.chatSection.actor);
         searchEntry.clutter_text.connect('activate', (actor) => {
             this.aiResponse(actor.text);
             searchEntry.clutter_text.set_text("");
@@ -115,8 +115,8 @@ class Indicator extends PanelMenu.Button {
             this.chatHistory = [];
             this.menu.box.remove_child(this.scrollView);
             this.chatSection = new PopupMenu.PopupMenuSection();
-            this.scrollView.add_actor(this.chatSection.actor);
-            this.menu.box.add(this.scrollView);
+            this.scrollView.add_child(this.chatSection.actor);
+            this.menu.box.add_child(this.scrollView);
             if(ISVERTEX){
                 this.getAireponse(undefined, this.chatTune)
             }
@@ -127,11 +127,11 @@ class Indicator extends PanelMenu.Button {
         if(GEMINIAPIKEY == ""){
             this.openSettings();
         }
-        item.add(searchEntry);
-        item.add(clearButton);
-        item.add(settingsButton);
+        item.add_child(searchEntry);
+        item.add_child(clearButton);
+        item.add_child(settingsButton);
         this.menu.addMenuItem(item);
-        this.menu.box.add(this.scrollView);
+        this.menu.box.add_child(this.scrollView);
         if(ISVERTEX){
             this.getAireponse(undefined, this.chatTune);
             //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
