@@ -178,15 +178,17 @@ class Indicator extends PanelMenu.Button {
         }
         var body = this.buildBody(question);
         let message = Soup.Message.new('POST', url);
-        message.request_headers.append(
-            'Authorization',
-            `Bearer ${GEMINIAPIKEY}`
-        )
+        if(ISVERTEX){
+            message.request_headers.append(
+                'Authorization',
+                `Bearer ${GEMINIAPIKEY}`
+            )
+        }
         message.set_request('application/json', 2,body);
         _httpSession.queue_message(message, (_httpSession, message) => {
             const res = JSON.parse(message.response_body.data);
             //log(message.response_body.data);
-            if(res.error?.code == 401 && newKey == undefined){
+            if(res.error?.code == 401 && newKey == undefined && ISVERTEX){
                 let key = Auth.generateAPIKey();
                 this.getAireponse(inputItem, question,key);
             } else {
