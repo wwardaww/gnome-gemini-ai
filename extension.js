@@ -109,10 +109,10 @@ class Indicator extends PanelMenu.Button {
             y_expand: true
         });
         let clearButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({style_class: 'trash-icon'})
+            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'user-trash-symbolic', style_class: 'trash-icon'})
         });
         let settingsButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({style_class: 'settings-icon'})
+            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'preferences-system-symbolic', style_class: 'settings-icon'})
         });
         this.scrollView.add_actor(this.chatSection.actor);
         searchEntry.clutter_text.connect('activate', (actor) => {
