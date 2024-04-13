@@ -62,6 +62,16 @@ class Indicator extends PanelMenu.Button {
         });
         this._fetchSettings();
     }
+    _initFirstResponse(){
+        if(ISVERTEX) {
+            this.chatTune = this.getTuneString();
+            this.getAireponse(undefined, this.chatTune);
+            //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
+            this.afterTune = setTimeout(() => {
+                this.getAireponse(undefined, "Hi!", undefined, true);
+            }, 1500);
+        }
+    }
     _fetchSettings () {
         GEMINIAPIKEY           = this._settings.get_string("gemini-api-key");
         DRIVEFOLDER            = this._settings.get_string("drive-folder");
@@ -118,7 +128,7 @@ class Indicator extends PanelMenu.Button {
             this.scrollView.add_actor(this.chatSection.actor);
             this.menu.box.add(this.scrollView);
             if(ISVERTEX){
-                this.getAireponse(undefined, this.chatTune)
+                this._initFirstResponse()
             }
         });
         settingsButton.connect('clicked', (self) => {
@@ -132,14 +142,9 @@ class Indicator extends PanelMenu.Button {
         item.add(settingsButton);
         this.menu.addMenuItem(item);
         this.menu.box.add(this.scrollView);
-        if(ISVERTEX){
-            this.getAireponse(undefined, this.chatTune);
-            //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
-            setTimeout(() => {
-                this.getAireponse(undefined, "Hi!");
-            },1500);
-        }
+        this._initFirstResponse();
     }
+   
     aiResponse(text){
         let aiResponse = _("<b>Gemini: </b> Thinking...");
         const inputCategory = new PopupMenu.PopupMenuItem("");
