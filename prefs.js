@@ -4,13 +4,13 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const Gettext = imports.gettext;
-const _ = Gettext.domain('geminiaiubuntu').gettext;
+const _ = ExtensionUtils.gettext;
 const SCHEMA_NAME = 'org.gnome.shell.extensions.geminiaiubuntu';
 
 
 
 function init() {
-    ExtensionUtils.initTranslations();
+    ExtensionUtils.initTranslations("geminiaiubuntu");
 }
 function buildPrefsWidget() {
     const geminiAi = new GeminiaiSettings();
