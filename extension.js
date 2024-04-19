@@ -43,7 +43,7 @@ let USERNAME = GLib.get_real_name();
 let RECURSIVETALK = false;
 let ISVERTEX = false;
 
-
+let afterTune;
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
     _loadSettings () {
@@ -59,7 +59,7 @@ class Indicator extends PanelMenu.Button {
             this.chatTune = this.getTuneString();
             this.getAireponse(undefined, this.chatTune);
             //Sometimes Vertex keep talking Turkish because of fine tunning for internet, so we need to send Hi! message to understand it, it can talk with any language
-            this.afterTune = setTimeout(() => {
+            afterTune = setTimeout(() => {
                 this.getAireponse(undefined, "Hi!", undefined, true);
             }, 1500);
         }
@@ -259,8 +259,8 @@ class Extension {
     }
 
     disable() {
-        clearTimeout(this.afterTune);
-        this.afterTune= null;
+        clearTimeout(afterTune);
+        afterTune = null;
         this._indicator.destroy();
         this._indicator = null;
     }
