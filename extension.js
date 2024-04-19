@@ -31,7 +31,6 @@ const PopupMenu = imports.ui.popupMenu;
 const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 const md2pango = Me.imports.md2pango;
-const Prefs = Me.imports.prefs;
 const Auth = Me.imports.auth;
 
 
@@ -48,17 +47,10 @@ let ISVERTEX = false;
 const Indicator = GObject.registerClass(
 class Indicator extends PanelMenu.Button {
     _loadSettings () {
-        this._settings = Prefs.SettingsSchema;
+        this._settings = ExtensionUtils.getSettings("org.gnome.shell.extensions.geminiaiubuntu");
         this._settingsChangedId = this._settings.connect('changed', () => {
             this._fetchSettings();
-            if(ISVERTEX) {
-                this.chatTune = this.getTuneString();
-                this.getAireponse(undefined, this.chatTune);
-                //explained on line: 137
-                setTimeout(() => {
-                    this.getAireponse(undefined, "Hi!");
-                },1500);
-            }
+            this._initFirstResponse();
         });
         this._fetchSettings();
     }
@@ -185,12 +177,14 @@ class Indicator extends PanelMenu.Button {
             )
         }
         message.set_request('application/json', 2,body);
-        _httpSession.queue_message(message, (_httpSession, message) => {
+        _httpSession.queue_message(message, async (_httpSession, message) =>  {
             const res = JSON.parse(message.response_body.data);
             //log(message.response_body.data);
             if(res.error?.code == 401 && newKey == undefined && ISVERTEX){
-                let key = Auth.generateAPIKey();
-                this.getAireponse(inputItem, question,key);
+                let keyData = await Auth.generateAPIKey();
+                keyData.then((key) => {
+                    this.getAireponse(inputItem, question,key);
+                });
             } else {
                 let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
                 if(RECURSIVETALK) {
@@ -238,14 +232,7 @@ class Indicator extends PanelMenu.Button {
         return `{"contents":${stringfiedHistory}}`
     }
     openSettings () {
-        if (typeof ExtensionUtils.openPrefs === 'function') {
-            ExtensionUtils.openPrefs();
-        } else {
-            Util.spawn([
-                "gnome-shell-extension-prefs",
-                Me.uuid
-            ]);
-        }
+        ExtensionUtils.openPrefs();
     }
 });
 
@@ -272,6 +259,8 @@ class Extension {
     }
 
     disable() {
+        clearTimeout(this.afterTune);
+        this.afterTune= null;
         this._indicator.destroy();
         this._indicator = null;
     }
