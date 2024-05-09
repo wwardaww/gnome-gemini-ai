@@ -135,7 +135,7 @@ class Gemini extends PanelMenu.Button {
         item.add_child(clearButton);
         item.add_child(settingsButton);
         this.menu.addMenuItem(item);
-        this.menu.box.add(this.scrollView);
+        this.menu.box.add_child(this.scrollView);
         this._initFirstResponse();
     }
     aiResponse(text){
