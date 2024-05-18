@@ -33,12 +33,11 @@ const Me = ExtensionUtils.getCurrentExtension();
 const md2pango = Me.imports.md2pango;
 const Auth = Me.imports.auth;
 
-
-
 let GEMINIAPIKEY = "";
 let DRIVEFOLDER = "";
 let VERTEXPROJECTID = "";
 let LOCATION = "";
+let GEMINIMODEL= "gemini-1.0-pro";
 let USERNAME = GLib.get_real_name();
 let RECURSIVETALK = false;
 let ISVERTEX = false;
@@ -70,6 +69,7 @@ class Indicator extends PanelMenu.Button {
         VERTEXPROJECTID        = this._settings.get_string("vertex-project-id");
         RECURSIVETALK          = this._settings.get_boolean("log-history");
         ISVERTEX               = this._settings.get_boolean("vertex-enabled");
+        GEMINIMODEL            = this._settings.get_string("gemini-version");
     }
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
@@ -160,7 +160,7 @@ class Indicator extends PanelMenu.Button {
     }
     getAireponse(inputItem, question, newKey = undefined){
         let _httpSession = new Soup.Session();
-        let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINIAPIKEY}`;
+        let url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINIMODEL}:generateContent?key=${GEMINIAPIKEY}`;
         if(VERTEXPROJECTID != "" && ISVERTEX){
             url = `https://us-east4-aiplatform.googleapis.com/v1/projects/${VERTEXPROJECTID}/locations/us-east4/publishers/google/models/gemini-1.0-pro:generateContent`;
         }
