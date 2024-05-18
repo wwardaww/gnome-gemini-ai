@@ -128,7 +128,6 @@ const GeminiaiSettings = new GObject.Class({
             this._settings.set_boolean("log-history", histroyButton.state);
             this._settings.set_boolean("vertex-enabled", VertexButton.state);
             statusLabel.set_markup(_("Your preferences have been saved"));
-            console.log("ZZZZZ", selectedModel);
         });
 
         // col, row, 1, 1
