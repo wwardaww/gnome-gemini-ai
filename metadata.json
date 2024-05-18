@@ -1,6 +1,6 @@
 {
   "name": "Gemini AI ChatBot",
-  "description": "This Add-on is using gemini ai 1.0 pro model for chatting. \n This extensions using thisipcan.cyou for location detection and googleapis.com for gemini model \n also if you are planing to use Vertex api you should install `gcloud` as dependency (optional) \n NOTE: This extension is not affiliated, funded, or in any way associated with Google and Gemini.",
+  "description": "This Add-on is using gemini ai 1.0 pro model for chatting. \n This extensions using thisipcan.cyou for location detection and googleapis.com for gemini model \n also if you are planing to use Vertex api you should install `gcloud` as dependency (optional) \n NOTE: This extension is not affiliated, funded, or in any way associated with Google and Gemini.\n CHANGELIST: https://github.com/wwardaww/gnome-gemini-ai/blob/main/CHANGES.md",
   "url": "https://github.com/wwardaww/gnome-gemini-ai",
   "uuid": "geminiaiubuntu@arda.com",
   "settings-schema": "org.gnome.shell.extensions.geminiaiubuntu",
