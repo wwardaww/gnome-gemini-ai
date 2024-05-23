@@ -2,7 +2,7 @@
 
 ## Verison 20+
 
-* Bug fix for #5
+* Bug fix for [#5](https://github.com/wwardaww/gnome-gemini-ai/issues/5)
 * Bug fix for `_httpSession.queue_message is not a function`
 
 ## Version 19+
