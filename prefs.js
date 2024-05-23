@@ -8,6 +8,10 @@ const _ = ExtensionUtils.gettext;
 const SCHEMA_NAME = 'org.gnome.shell.extensions.geminiaiubuntu';
 const MODELS = ['gemini-1.0-pro', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
 
+// Disable translation for older version
+if(typeof _ !== 'function'){
+    _ = (str) => str;
+}
 
 function init() {
     ExtensionUtils.initTranslations("geminiaiubuntu");

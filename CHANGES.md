@@ -1,5 +1,10 @@
 # CHANGES
 
+## Verison 20+
+
+* Bug fix for #5
+* Bug fix for `_httpSession.queue_message is not a function`
+
 ## Version 19+
 
 * Now you can use Gemini 1.5 Flash and Pro!

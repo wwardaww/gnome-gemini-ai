@@ -20,7 +20,10 @@
 
 const GETTEXT_DOMAIN = 'geminiaiubuntu';
 
-imports.gi.versions.Soup = '2.4';
+const soupV = parseFloat(imports.gi.versions.Soup)
+if(soupV >= 2.4) {
+    imports.gi.versions.Soup = '2.4';
+}
 const { GObject, St, Soup, GLib} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
