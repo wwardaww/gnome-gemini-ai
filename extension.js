@@ -20,10 +20,6 @@
 
 const GETTEXT_DOMAIN = 'geminiaiubuntu';
 
-const soupV = parseFloat(imports.gi.versions.Soup)
-if(soupV >= 2.4) {
-    imports.gi.versions.Soup = '2.4';
-}
 const { GObject, St, Soup, GLib} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -36,6 +32,7 @@ const _ = ExtensionUtils.gettext;
 const Me = ExtensionUtils.getCurrentExtension();
 const md2pango = Me.imports.md2pango;
 const Auth = Me.imports.auth;
+const soupV = parseFloat(imports.gi.versions.Soup);
 
 let GEMINIAPIKEY = "";
 let DRIVEFOLDER = "";
@@ -180,33 +177,70 @@ class Indicator extends PanelMenu.Button {
                 `Bearer ${GEMINIAPIKEY}`
             )
         }
-        message.set_request('application/json', 2,body);
-        _httpSession.queue_message(message, async (_httpSession, message) =>  {
-            const res = JSON.parse(message.response_body.data);
-            //log(message.response_body.data);
-            if(res.error?.code == 401 && newKey == undefined && ISVERTEX){
-                let keyData = await Auth.generateAPIKey();
-                keyData.then((key) => {
-                    this.getAireponse(inputItem, question,key);
-                });
-            } else {
-                let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
-                if(RECURSIVETALK) {
-                    this.chatHistory.push({
-                        role: "user",
-                        parts:[{text: question}]
-                    });
-                    this.chatHistory.push({
-                        role: "model",
-                        parts:[{text: aiResponse}]
-                    });
+        if(soupV >= 3) {
+            message.set_request_body_from_bytes('application/json', bytes);
+            _httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, async (_httpSession, result) => {
+                let bytes = _httpSession.send_and_read_finish(result);
+                let decoder = new TextDecoder('utf-8');
+                let response = decoder.decode(bytes.get_data());
+                let res = JSON.parse(response);
+                if(res.error?.code != 401 && res.error !== undefined){
+                    inputItem?.label.clutter_text.set_markup(response);
+                    return;
                 }
-                if(inputItem != undefined){
-                    let htmlResponse = md2pango.convert(aiResponse);
-                    inputItem.label.clutter_text.set_markup(htmlResponse);
+                if(res.error?.code == 401 && newKey == undefined && ISVERTEX){
+                    let keyData = await Auth.generateAPIKey();
+                    keyData.then((key) => {
+                        this.getAireponse(inputItem, question,key);
+                    });
+                } else {
+                    let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
+                    if(RECURSIVETALK) {
+                        this.chatHistory.push({
+                            role: "user",
+                            parts:[{text: question}]
+                        });
+                        this.chatHistory.push({
+                            role: "model",
+                            parts:[{text: aiResponse}]
+                        });
+                    }
+                    if(inputItem != undefined){
+                        let htmlResponse = md2pango.convert(aiResponse);
+                        inputItem.label.clutter_text.set_markup(htmlResponse);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            message.set_request('application/json', 2,body);
+            _httpSession.queue_message(message, async (_httpSession, message) =>  {
+                const res = JSON.parse(message.response_body.data);
+                //log(message.response_body.data);
+                if(res.error?.code == 401 && newKey == undefined && ISVERTEX){
+                    let keyData = await Auth.generateAPIKey();
+                    keyData.then((key) => {
+                        this.getAireponse(inputItem, question,key);
+                    });
+                } else {
+                    let aiResponse = res.candidates[0]?.content?.parts[0]?.text;
+                    if(RECURSIVETALK) {
+                        this.chatHistory.push({
+                            role: "user",
+                            parts:[{text: question}]
+                        });
+                        this.chatHistory.push({
+                            role: "model",
+                            parts:[{text: aiResponse}]
+                        });
+                    }
+                    if(inputItem != undefined){
+                        let htmlResponse = md2pango.convert(aiResponse);
+                        inputItem.label.clutter_text.set_markup(htmlResponse);
+                    }
+                }
+            });
+        }
+       
         
     }
     getTuneString(){

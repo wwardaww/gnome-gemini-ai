@@ -1,5 +1,10 @@
 # CHANGES
 
+## Version 22+
+
+- Bug fix for [#7](https://github.com/wwardaww/gnome-gemini-ai/issues/7)
+- Added Dutch version (thanks to [@Vistaus](https://github.com/Vistaus))
+
 ## Verison 20+
 
 * Bug fix for [#5](https://github.com/wwardaww/gnome-gemini-ai/issues/5)
@@ -22,3 +27,4 @@
 ### Report a Bug
 
 If you encounter any issues, please create an issue on GitHub. I will fix them when I have free time.
+
