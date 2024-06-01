@@ -80,7 +80,14 @@ class Indicator extends PanelMenu.Button {
         }
         this.chatHistory = [];
         
-        this.add_child(new St.Icon({style_class: 'gemini-icon'}));
+        let icon = new St.Button({
+            can_focus: false,  toggle_mode: false, child: new St.Icon({style_class: 'gemini-icon'})
+        });
+        
+        icon.connect('clicked', () => {
+            console.log('u triggered');
+        });
+        this.add_child(icon);
         this.menu.actor.style_class = "m-w-100"
       
         let item = new PopupMenu.PopupBaseMenuItem({
