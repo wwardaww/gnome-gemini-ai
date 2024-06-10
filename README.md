@@ -25,7 +25,7 @@ This Add-on is using gemini 1.0 pro model for chatting.
 3. Shortcut for Auth: If you test the vertex api from you account it will generate Auth credential. ref:
    * https://console.developers.google.com/apis/api/aiplatform.googleapis.com/overview?project=`PROJECT_ID`
    * if you create new project on Google Ai site you can learn your `PROJECT_ID` from [Google Dev Console](https://console.cloud.google.com/cloud-resource-manager)
-4. After the installization of `gloud-cli` you need to login via: `gcloud auth login`
+4. After the installization of `gcloud-cli` you need to login via: `gcloud auth login`
 5. Once you login via cli you need to follow theese steps (1-3) on your local: [Vertex AI Gemini API Beginner Guide](https://cloud.google.com/vertex-ai/generative-ai/docs/start/quickstarts/quickstart-multimodal?cloudshell=true#gemini-beginner-samples-drest)
 6. Finally you can create JWT key by: `gcloud auth application-default print-access-token` on terminal
    * **Note:** You need to create manually JWT, Once you set the key to `Gemini API key` on addon settings, the addon will automaticly create new JWT's when token was expired
