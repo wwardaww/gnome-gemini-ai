@@ -55,7 +55,7 @@ fn main() -> wry::Result<()> {
     };
     let _webview = builder
         .with_transparent(true)
-        .with_html(html.replace("class='default'", format!("class='{}'", theme).as_str()).replace("TEXTTRANSLATION", translation.as_str()))
+        .with_html(html.replace("class='default'", format!("class='{}'", theme).as_str()).replace("let translator;", format!("const translator={{{}}};", translation.as_str()).as_str()))
         .build()?;
 
     event_loop.run(move |event, _, control_flow| {
@@ -76,7 +76,6 @@ fn get_translations()-> String {
     let lang_code = locale.split('_').next().unwrap();
    
     let formatted_path = format!("{}/../locales/{}/LC_MESSAGES/{}.mo", current_dir.to_str().unwrap(), lang_code, lang_code);
-    println!("{:?}", formatted_path);
     let mo_file_path = formatted_path.as_str();
     let mut t_string = String::new();
     

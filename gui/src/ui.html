@@ -1,10 +1,9 @@
 <html>
     <head>
         <script>
-            const translator = {TEXTTRANSLATION};
-            console.log(translator)
+            let translator;
             var translate = (key) => {
-                if(translator[key]){
+                if(typeof translator === "object" && Object.keys(translator).includes(key)){
                     return translator[key];
                 } else {
                     return key;
