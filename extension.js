@@ -87,7 +87,7 @@ class Indicator extends PanelMenu.Button {
        
         icon.connect('clicked', () => {
             const systemSettings = St.Settings.get();
-            const theme = systemSettings.gtkThemeVariant?.toLowerCase().endsWith('-dark') ? 'dark' : 'light';
+            const theme = systemSettings.gtkThemeVariant?.toLowerCase().includes('dark') ? 'dark' : 'light';
             GLib.spawn_command_line_async(Me.path +`/gui/target/debug/geminigui ${theme}`);
         });
         this.add_child(icon);

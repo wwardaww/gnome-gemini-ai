@@ -1,8 +1,24 @@
 <html>
-
+    <head>
+        <script>
+            const translator = {TEXTTRANSLATION};
+            console.log(translator)
+            var translate = (key) => {
+                if(translator[key]){
+                    return translator[key];
+                } else {
+                    return key;
+                }
+                
+            }
+        </script>
+    </head>
 <body class='default'>
-    <div>wip</div>
+    <div id="context"></div>
 </body>
+<script>
+   document.getElementById("context").innerHTML = translate("Save");
+</script>
 <style>
     .light {
         background-color:green;
