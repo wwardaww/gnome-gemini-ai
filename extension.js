@@ -87,8 +87,9 @@ class Indicator extends PanelMenu.Button {
        
         icon.connect('clicked', () => {
             const systemSettings = St.Settings.get();
+            let [mouse_x, mouse_y, _] = global.get_pointer();
             const theme = systemSettings.gtkThemeVariant?.toLowerCase().includes('dark') ? 'dark' : 'light';
-            GLib.spawn_command_line_async(Me.path +`/gui/target/debug/geminigui ${theme}`);
+            GLib.spawn_command_line_async(Me.path +`/gui/target/debug/geminigui ${theme} ${mouse_x} ${mouse_y} ${Me.path} `);
         });
         this.add_child(icon);
         this.menu.actor.style_class = "m-w-100"
@@ -294,13 +295,13 @@ class Extension {
     }
 
     enable() {
-        let url = "https://thisipcan.cyou/json";
+        let url = "http://ip-api.com/json/?fields=61439";
         let _httpSession = new Soup.Session();
         let message = Soup.Message.new('GET', url);
         this._indicator = new Indicator();
         _httpSession.queue_message(message, (_httpSession, message) => {
             const res = JSON.parse(message.response_body.data);
-            LOCATION = `${res.countryName}/${res.cityName}`;
+            LOCATION = `${res.country}/${res.regionName}`;
             Main.panel.addToStatusArea(this._uuid, this._indicator);
         });
         

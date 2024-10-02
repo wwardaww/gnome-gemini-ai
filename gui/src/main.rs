@@ -3,6 +3,7 @@ use sysinfo::{Pid, System};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, Read};
+use std::str::FromStr;
 use tao::{
     dpi::{LogicalSize, Size},
     event::{Event, WindowEvent},
@@ -14,7 +15,12 @@ use wry::WebViewBuilder;
 
 
 fn main() -> wry::Result<()> {
-    let translation: String = get_translations();
+    let args: Vec<String> = env::args().collect();
+    let mut dir:&str = "";
+    if args.len() >= 4 {
+        dir = args[4].as_str();
+    }
+    let translation: String = get_translations(dir.to_string());
     let s = System::new_all();
     let self_pid = std::process::id();
     let parent_pid = std::os::unix::process::parent_id();
@@ -27,7 +33,7 @@ fn main() -> wry::Result<()> {
     if suicide {std::process::exit(1)};
     let event_loop = EventLoop::new();
     let html: &str = include_str!("ui.html");
-    let args: Vec<String> = env::args().collect();
+    
     let mut theme: &str = "default";
     if args.len() >= 2 {
         theme = args[1].as_str();
@@ -37,6 +43,7 @@ fn main() -> wry::Result<()> {
     let mut builder = WindowBuilder::new()
         .with_decorations(false)
         .with_transparent(true)
+        .with_resizable(true)
         .with_inner_size(Size::Logical(LogicalSize {
             width: 400.0,
             height: 200.0,
@@ -45,6 +52,10 @@ fn main() -> wry::Result<()> {
     let window = builder.build(&event_loop).unwrap();
     let mut mouse_pos = window.cursor_position().unwrap();
     mouse_pos.x += 100.0;
+    if args.len() >= 3 {
+        mouse_pos.x = f64::from_str(args[2].as_str()).unwrap()-210.0;
+        mouse_pos.y = f64::from_str(args[3].as_str()).unwrap();
+    }
     window.set_outer_position(mouse_pos);
 
     let builder = {
@@ -70,20 +81,33 @@ fn main() -> wry::Result<()> {
         }
     });
 }
-fn get_translations()-> String {
-    let current_dir = env::current_dir().unwrap();
+fn get_translations(dir: String)-> String {
+    let mut path: String = dir;
+    if path == ""{
+        path = env::current_dir().unwrap().to_str().unwrap().to_string();
+    }
     let locale = env::var("LANG").unwrap();
     let lang_code = locale.split('_').next().unwrap();
    
-    let formatted_path = format!("{}/../locales/{}/LC_MESSAGES/{}.mo", current_dir.to_str().unwrap(), lang_code, lang_code);
+    let mut back_path = ".";
+    if path.contains("target")
+    {
+        back_path = "../../..";
+    }
+    let formatted_path = format!("{}/{}/locales/{}/LC_MESSAGES/{}.mo", path, back_path, lang_code, lang_code);
     let mo_file_path = formatted_path.as_str();
     let mut t_string = String::new();
-    
     let translations = parse_mo_file(mo_file_path);
     match translations {
         Ok(t) => {
             for (msgid, msgstr) in &t {
-                t_string += &format!("\"{}\": `{}`,\n", msgid, msgstr);
+                if msgid == ""
+                { 
+                    continue; 
+                }
+                let t_msgid: String = msgid.replace("\n", "<br>");
+                let t_msgstr: String = msgstr.replace("\n", "<br>");
+                t_string += &format!("\"{}\": \"{}\",\n", t_msgid, t_msgstr);
             }
         }
         Err(_) => {

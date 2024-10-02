@@ -13,22 +13,24 @@
         </script>
     </head>
 <body class='default'>
-    <div id="context"></div>
+    <div class="actions"></div>
+        <input type="text" id="chat">
+    </div>
+    <div id="context">
+
+    </div>
 </body>
 <script>
-   document.getElementById("context").innerHTML = translate("Save");
+   document.getElementById("context").innerHTML = translate("path");
+   document.getElementById("chat").setAttribute("placeholder", translate("What's on your mind?"));
 </script>
 <style>
-    .light {
-        background-color:green;
+    .light, .default {
+        background-color:white;
         color:black;
     }
     .dark {
-        background-color:red;
-        color:white;
-    }
-    .default {
-        background-color:blue;
+        background-color:#333;
         color:white;
     }
 </style>
