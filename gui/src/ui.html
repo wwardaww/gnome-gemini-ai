@@ -1,37 +1,222 @@
 <html>
-    <head>
-        <script>
-            let translator;
-            var translate = (key) => {
-                if(typeof translator === "object" && Object.keys(translator).includes(key)){
-                    return translator[key];
-                } else {
-                    return key;
-                }
-                
+
+<head>
+    <script>
+        let translator;
+        var translate = (key) => {
+            if (typeof translator === "object" && Object.keys(translator).includes(key)) {
+                return translator[key];
+            } else {
+                return key;
             }
-        </script>
-    </head>
+
+        }
+    </script>
+</head>
+
 <body class='default'>
-    <div class="actions"></div>
-        <input type="text" id="chat">
-    </div>
-    <div id="context">
+    <div class="wrapper">
+        <div class="actions">
+            <input type="text" id="chat">
+            <div class="btns">
+                <button id="delete" class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="21"
+                        viewBox="0 0 20 21" fill="none">
+                        <path
+                            d="M16.875 4.25H13.75V3.625C13.75 3.12772 13.5525 2.65081 13.2008 2.29917C12.8492 1.94754 12.3723 1.75 11.875 1.75H8.125C7.62772 1.75 7.15081 1.94754 6.79917 2.29917C6.44754 2.65081 6.25 3.12772 6.25 3.625V4.25H3.125C2.95924 4.25 2.80027 4.31585 2.68306 4.43306C2.56585 4.55027 2.5 4.70924 2.5 4.875C2.5 5.04076 2.56585 5.19973 2.68306 5.31694C2.80027 5.43415 2.95924 5.5 3.125 5.5H3.75V16.75C3.75 17.0815 3.8817 17.3995 4.11612 17.6339C4.35054 17.8683 4.66848 18 5 18H15C15.3315 18 15.6495 17.8683 15.8839 17.6339C16.1183 17.3995 16.25 17.0815 16.25 16.75V5.5H16.875C17.0408 5.5 17.1997 5.43415 17.3169 5.31694C17.4342 5.19973 17.5 5.04076 17.5 4.875C17.5 4.70924 17.4342 4.55027 17.3169 4.43306C17.1997 4.31585 17.0408 4.25 16.875 4.25ZM7.5 3.625C7.5 3.45924 7.56585 3.30027 7.68306 3.18306C7.80027 3.06585 7.95924 3 8.125 3H11.875C12.0408 3 12.1997 3.06585 12.3169 3.18306C12.4342 3.30027 12.5 3.45924 12.5 3.625V4.25H7.5V3.625ZM15 16.75H5V5.5H15V16.75ZM8.75 8.625V13.625C8.75 13.7908 8.68415 13.9497 8.56694 14.0669C8.44973 14.1842 8.29076 14.25 8.125 14.25C7.95924 14.25 7.80027 14.1842 7.68306 14.0669C7.56585 13.9497 7.5 13.7908 7.5 13.625V8.625C7.5 8.45924 7.56585 8.30027 7.68306 8.18306C7.80027 8.06585 7.95924 8 8.125 8C8.29076 8 8.44973 8.06585 8.56694 8.18306C8.68415 8.30027 8.75 8.45924 8.75 8.625ZM12.5 8.625V13.625C12.5 13.7908 12.4342 13.9497 12.3169 14.0669C12.1997 14.1842 12.0408 14.25 11.875 14.25C11.7092 14.25 11.5503 14.1842 11.4331 14.0669C11.3158 13.9497 11.25 13.7908 11.25 13.625V8.625C11.25 8.45924 11.3158 8.30027 11.4331 8.18306C11.5503 8.06585 11.7092 8 11.875 8C12.0408 8 12.1997 8.06585 12.3169 8.18306C12.4342 8.30027 12.5 8.45924 12.5 8.625Z"
+                            fill="#8E8E93" />
+                    </svg></button>
+                <button id="settings" class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="21"
+                        viewBox="0 0 20 21" fill="none">
+                        <path
+                            d="M10 13C11.3807 13 12.5 11.8807 12.5 10.5C12.5 9.11929 11.3807 8 10 8C8.61929 8 7.5 9.11929 7.5 10.5C7.5 11.8807 8.61929 13 10 13Z"
+                            stroke="#8E8E93" stroke-width="1.25" />
+                        <path
+                            d="M11.4707 2.29341C11.1649 2.16675 10.7766 2.16675 9.99989 2.16675C9.22322 2.16675 8.83489 2.16675 8.52905 2.29341C8.3267 2.37718 8.14285 2.49999 7.98799 2.65485C7.83313 2.80971 7.71032 2.99357 7.62655 3.19591C7.54989 3.38175 7.51905 3.59925 7.50739 3.91508C7.50196 4.14336 7.43872 4.36652 7.32359 4.56371C7.20845 4.7609 7.04518 4.92566 6.84905 5.04258C6.64973 5.15406 6.42538 5.21314 6.197 5.21431C5.96862 5.21547 5.74368 5.15868 5.54322 5.04925C5.26322 4.90091 5.06072 4.81925 4.85989 4.79258C4.42182 4.73497 3.9788 4.85367 3.62822 5.12258C3.36655 5.32508 3.17155 5.66091 2.78322 6.33341C2.39489 7.00591 2.19989 7.34175 2.15739 7.67091C2.12875 7.88796 2.14315 8.10852 2.19978 8.31999C2.2564 8.53147 2.35413 8.72972 2.48739 8.90341C2.61072 9.06341 2.78322 9.19758 3.05072 9.36591C3.44489 9.61341 3.69822 10.0351 3.69822 10.5001C3.69822 10.9651 3.44489 11.3867 3.05072 11.6334C2.78322 11.8026 2.60989 11.9367 2.48739 12.0967C2.35413 12.2704 2.2564 12.4687 2.19978 12.6802C2.14315 12.8916 2.12875 13.1122 2.15739 13.3292C2.20072 13.6576 2.39489 13.9942 2.78239 14.6667C3.17155 15.3392 3.36572 15.6751 3.62822 15.8776C3.80192 16.0108 4.00017 16.1086 4.21164 16.1652C4.42312 16.2218 4.64368 16.2362 4.86072 16.2076C5.06072 16.1809 5.26322 16.0992 5.54322 15.9509C5.74368 15.8415 5.96862 15.7847 6.197 15.7859C6.42538 15.787 6.64973 15.8461 6.84905 15.9576C7.25155 16.1909 7.49072 16.6201 7.50739 17.0851C7.51905 17.4017 7.54905 17.6184 7.62655 17.8042C7.71032 18.0066 7.83313 18.1905 7.98799 18.3453C8.14285 18.5002 8.3267 18.623 8.52905 18.7067C8.83489 18.8334 9.22322 18.8334 9.99989 18.8334C10.7766 18.8334 11.1649 18.8334 11.4707 18.7067C11.6731 18.623 11.8569 18.5002 12.0118 18.3453C12.1666 18.1905 12.2895 18.0066 12.3732 17.8042C12.4499 17.6184 12.4807 17.4017 12.4924 17.0851C12.5091 16.6201 12.7482 16.1901 13.1507 15.9576C13.35 15.8461 13.5744 15.787 13.8028 15.7859C14.0312 15.7847 14.2561 15.8415 14.4566 15.9509C14.7366 16.0992 14.9391 16.1809 15.1391 16.2076C15.3561 16.2362 15.5767 16.2218 15.7881 16.1652C15.9996 16.1086 16.1979 16.0108 16.3716 15.8776C16.6341 15.6759 16.8282 15.3392 17.2166 14.6667C17.6049 13.9942 17.7999 13.6584 17.8424 13.3292C17.871 13.1122 17.8566 12.8916 17.8 12.6802C17.7434 12.4687 17.6456 12.2704 17.5124 12.0967C17.3891 11.9367 17.2166 11.8026 16.9491 11.6342C16.754 11.5154 16.5923 11.349 16.479 11.1507C16.3658 10.9523 16.3047 10.7285 16.3016 10.5001C16.3016 10.0351 16.5549 9.61341 16.9491 9.36675C17.2166 9.19758 17.3899 9.06341 17.5124 8.90341C17.6456 8.72972 17.7434 8.53147 17.8 8.31999C17.8566 8.10852 17.871 7.88796 17.8424 7.67091C17.7991 7.34258 17.6049 7.00591 17.2174 6.33341C16.8282 5.66091 16.6341 5.32508 16.3716 5.12258C16.1979 4.98932 15.9996 4.89159 15.7881 4.83497C15.5767 4.77835 15.3561 4.76394 15.1391 4.79258C14.9391 4.81925 14.7366 4.90091 14.4557 5.04925C14.2554 5.15853 14.0306 5.21524 13.8024 5.21408C13.5741 5.21291 13.3499 5.15391 13.1507 5.04258C12.9546 4.92566 12.7913 4.7609 12.6762 4.56371C12.5611 4.36652 12.4978 4.14336 12.4924 3.91508C12.4807 3.59841 12.4507 3.38175 12.3732 3.19591C12.2895 2.99357 12.1666 2.80971 12.0118 2.65485C11.8569 2.49999 11.6731 2.37718 11.4707 2.29341Z"
+                            stroke="#8E8E93" stroke-width="1.25" />
+                    </svg></button>
+
+            </div>
+        </div>
+        <div id="context">
+        </div>
 
     </div>
+    <!-- MARK: Comm with Engine-->
+    <script>
+        window.resizeTo = (w, h) => window.ipc.postMessage(`resize=${w},${h}`);
+    </script>
+
+    <!-- MARK: System Variables -->
+    <script>
+        var sysVars;
+    </script>
+    <script>
+        //MARK: Variables
+        const chatField = document.getElementById("chat");
+        const deleteBtn = document.getElementById("delete");
+        const settings = document.getElementById("settings");
+        let GEMINIAPIKEY = "";
+        let DRIVEFOLDER = "";
+        let VERTEXPROJECTID = "";
+        let LOCATION = "";
+        let GEMINIMODEL = "gemini-1.0-pro";
+        let RECURSIVETALK = false;
+        let ISVERTEX = false;
+        //MARK: Translations
+        chatField.setAttribute("placeholder", translate("What's on your mind?"));
+        //MARK: Events
+        chatField.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                let uuID = createChatbox(chatField.value);
+                chatField.value = "";
+            }
+        });
+
+        //MARK: Functions
+        function createChatbox(question) {
+            const container = document.getElementById("context");
+            const chatBox = document.createElement("div");
+            const uuID = `ar_${Date.now()}`;
+            let canResize = false;
+            if(container.childNodes.length > 1 && container.offsetHeight < 920){
+                canResize = true;
+            }
+            chatBox.classList.add("chatBox");
+            chatBox.innerHTML = `
+             <div class="userStory"><b>${sysVars?.userName}:</b> ${question}</div>
+             <div class="aiStory" id="${uuID}">${translate("<b>Gemini: </b> Thinking...")}</div>
+             `;
+            container.appendChild(chatBox);
+            if(canResize){
+                window.resizeTo(0, (container.offsetHeight + 100));
+            }
+            return uuID;
+        }
+
+    </script>
+    <style>
+        * {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: rgba(0,0,0,0);
+            overflow: hidden;
+        }
+
+        .wrapper {
+            padding: 10px;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            min-height: 180px;
+            max-height: 90%;
+            overflow: scroll;
+        }
+
+        #chat {
+            width: 75%;
+            border-radius: 50px;
+            background-color: #F2F2F7;
+            padding: 10px 15px;
+            border: 0;
+
+            ::placeholder {
+                color: #8E8E93;
+            }
+        }
+
+        #context {
+            margin-top: 20px;
+        }
+
+        .chatBox {
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            gap: 20px;
+            justify-content: flex-start;
+            padding: 20px 0;
+            border-top: 1px solid #E5E5EA;
+
+            .userStory {
+                color: #8E8E93;
+            }
+
+            .aiStory {
+                color: #1C1C1E;
+            }
+        }
+
+        .light,
+        .default {
+            .wrapper {
+                background-color: white;
+                color: black;
+            }
+
+        }
+
+        .dark {
+            .wrapper {
+                background-color: #1C1C1E;
+                color: #F2F2F7;
+
+                #chat {
+                    background-color: #2C2C2E;
+                    color: #F2F2F7;
+                }
+
+                .chatBox {
+                    .aiStory {
+                        color: #F2F2F7;
+                    }
+                }
+
+                svg {
+                    path {
+                        stroke: #8E8E93;
+                    }
+                }
+
+                .btn:hover {
+                    svg {
+                        path {
+                            stroke: #F2F2F7;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            width: 30px;
+            height: 30px;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 0;
+            background-color: transparent;
+        }
+
+        .btn:hover {
+            cursor: pointer;
+
+            svg {
+                path {
+                    stroke: #1C1C1E;
+                }
+            }
+        }
+    </style>
+
 </body>
-<script>
-   document.getElementById("context").innerHTML = translate("path");
-   document.getElementById("chat").setAttribute("placeholder", translate("What's on your mind?"));
-</script>
-<style>
-    .light, .default {
-        background-color:white;
-        color:black;
-    }
-    .dark {
-        background-color:#333;
-        color:white;
-    }
-</style>
+
 </html>

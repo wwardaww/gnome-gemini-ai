@@ -89,7 +89,7 @@ class Indicator extends PanelMenu.Button {
             const systemSettings = St.Settings.get();
             let [mouse_x, mouse_y, _] = global.get_pointer();
             const theme = systemSettings.gtkThemeVariant?.toLowerCase().includes('dark') ? 'dark' : 'light';
-            GLib.spawn_command_line_async(Me.path +`/gui/target/debug/geminigui ${theme} ${mouse_x} ${mouse_y} ${Me.path} `);
+            GLib.spawn_command_line_async(Me.path +`/gui/target/debug/geminigui ${theme} ${mouse_x} ${mouse_y} ${Me.path} userName=${USERNAME}`);
         });
         this.add_child(icon);
         this.menu.actor.style_class = "m-w-100"
