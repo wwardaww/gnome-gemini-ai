@@ -95,7 +95,6 @@ fn main() -> wry::Result<()> {
                 match cmd {
                     "resize" => {
                         let size = ipc_args.split(",").collect::<Vec<&str>>();
-
                         let w_size =  win.borrow().inner_size();
                         let n_size =LogicalSize::new(
                             if size[0] == "0" {
@@ -129,7 +128,6 @@ fn main() -> wry::Result<()> {
                 ),
         )
         .build()?;
-
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
 
