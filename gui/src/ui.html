@@ -1,6 +1,11 @@
 <html>
 
 <head>
+    <script src="
+    https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js
+    "></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>
         let translator;
         var translate = (key) => {
@@ -43,7 +48,7 @@
     </div>
     <!-- MARK: Comm with Engine-->
     <script>
-        window.resizeTo = (w, h) => window.ipc.postMessage(`resize=${w},${h}`);
+        window.resizeTo = (w, h) => window.ipc?.postMessage(`resize=${w},${h}`);
     </script>
 
     <!-- MARK: System Variables -->
@@ -51,17 +56,30 @@
         var sysVars;
     </script>
     <script>
+        let APIKEY = "";
+        let LOCATION = "";
+        let AIMODEL = "gemini-1.5-flash-latest";
         //MARK: Variables
         const chatField = document.getElementById("chat");
         const deleteBtn = document.getElementById("delete");
         const settings = document.getElementById("settings");
-        let GEMINIAPIKEY = "";
-        let DRIVEFOLDER = "";
-        let VERTEXPROJECTID = "";
-        let LOCATION = "";
-        let GEMINIMODEL = "gemini-1.0-pro";
-        let RECURSIVETALK = false;
-        let ISVERTEX = false;
+        const container = document.getElementById("context");
+        const chatHistory = [];
+        const md = markdownit({
+            html: true,
+            typographer: true,
+            linkify: false,
+            highlight: function (str, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(str, { language: lang }).value;
+                    } catch (__) { }
+                }
+
+                return '';
+            }
+        })
+
         //MARK: Translations
         chatField.setAttribute("placeholder", translate("What's on your mind?"));
         //MARK: Events
@@ -69,17 +87,22 @@
             if (event.key === "Enter") {
                 event.preventDefault();
                 let uuID = createChatbox(chatField.value);
+                generateGeminiResponse(uuID, chatField.value);
                 chatField.value = "";
             }
         });
+        deleteBtn.addEventListener("click", function () {
+            container.innerHTML = "";
+            chatHistory = [];
+            chatField.value = "";
+        })
 
         //MARK: Functions
         function createChatbox(question) {
-            const container = document.getElementById("context");
             const chatBox = document.createElement("div");
             const uuID = `ar_${Date.now()}`;
             let canResize = false;
-            if(container.childNodes.length > 1 && container.offsetHeight < 920){
+            if (container.childNodes.length > 1) {
                 canResize = true;
             }
             chatBox.classList.add("chatBox");
@@ -88,10 +111,47 @@
              <div class="aiStory" id="${uuID}">${translate("<b>Gemini: </b> Thinking...")}</div>
              `;
             container.appendChild(chatBox);
-            if(canResize){
-                window.resizeTo(0, (container.offsetHeight + 100));
+            if (canResize) {
+                updateSize();
             }
             return uuID;
+        }
+
+        function updateSize(width = false) {
+            if (container.offsetWidth < 800 && container.offsetHeight < 800) {
+                window.resizeTo((width ? container.offsetWidth: 0), (container.offsetHeight + 100));
+            }
+        }
+
+        //MARK: Generate Ai responses
+        async function generateGeminiResponse(uuID, input) {
+            const body = JSON.stringify([
+                ...chatHistory,
+                {
+                    role: "user",
+                    parts: [{ text: input }]
+                }
+            ])
+            const resPromise = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${AIMODEL}:generateContent?key=${APIKEY}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: `{"contents":${body}}`
+            });
+            let res = await resPromise.text();
+            res = JSON.parse(res);
+            const aiResponse = res.candidates[0]?.content?.parts[0]?.text || "";
+            document.getElementById(uuID).innerHTML = md.render(aiResponse);
+            updateSize();
+            chatHistory.push({
+                role: "user",
+                parts: [{ text: input }],
+            });
+            chatHistory.push({
+                role: "model",
+                parts: [{ text: aiResponse }],
+            });
         }
 
     </script>
@@ -103,7 +163,7 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: rgba(0,0,0,0);
+            background-color: rgba(0, 0, 0, 0);
             overflow: hidden;
         }
 
@@ -214,6 +274,12 @@
                     stroke: #1C1C1E;
                 }
             }
+        }
+
+        pre {
+            color: #c9d1d9;
+            background: #0d1117;
+            padding: 20px;
         }
     </style>
 

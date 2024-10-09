@@ -63,7 +63,7 @@ fn main() -> wry::Result<()> {
     let mut mouse_pos = window.borrow().cursor_position().unwrap();
     mouse_pos.x += 100.0;
     if args.len() >= 3 {
-        mouse_pos.x = f64::from_str(args[2].as_str()).unwrap() - 210.0;
+        mouse_pos.x = f64::from_str(args[2].as_str()).unwrap() - 220.0;
         mouse_pos.y = f64::from_str(args[3].as_str()).unwrap();
     }
     window.borrow().set_outer_position(mouse_pos);
