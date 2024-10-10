@@ -84,20 +84,23 @@
     <!-- MARK: Comm with Engine-->
     <script>
         window.resizeTo = (w, h) => window.ipc?.postMessage(`resize=${w},${h}`);
+        window.engineStorage = (data) => window.ipc?.postMessage(`store=${data}`);
     </script>
 
     <!-- MARK: System Variables -->
     <script>
         var sysVars;
+        var storage;
     </script>
     <script>
-        var storage = {
-            chatHistory: [],
-            settings: {
-                model: "gemini-1.0-pro"
+        if (!storage) {
+            storage = {
+                chatHistory: [],
+                settings: {
+                    model: "gemini-1.0-pro"
+                }
             }
         }
-
         //MARK: Variables
         const chatField = document.getElementById("chat");
         const deleteBtn = document.getElementById("delete");
@@ -150,7 +153,7 @@
             document.querySelector(".wrapper.settings").style.display = "none";
             document.querySelector(".wrapper.home").style.display = "block";
             saveSettings();
-            updateSize();
+            updateSize(450, 250);
         })
         //MARK: Functions
         function createChatbox(question, answer = undefined) {
@@ -163,7 +166,7 @@
             chatBox.classList.add("chatBox");
             let aiRes = translate("<b>Gemini: </b> Thinking...")
             if (answer) {
-                aiRes = md.render(aiResponse);
+                aiRes = md.render(answer);
             }
             chatBox.innerHTML = `
              <div class="userStory"><b>${sysVars?.userName}:</b> ${question}</div>
@@ -177,7 +180,7 @@
         }
 
         function updateSize(width = false, height = false) {
-            if (container.offsetWidth < 800 && container.offsetHeight < 800) {
+            if (container.offsetHeight < 800) {
                 window.resizeTo((width ? container.offsetWidth : 0), (height ? height : container.offsetHeight + 100));
             }
         }
@@ -191,7 +194,7 @@
                     parts: [{ text: input }]
                 }
             ])
-            const resPromise = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${settings.model}:generateContent?key=${settings.apiKey}`, {
+            const resPromise = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${storage.settings.model}:generateContent?key=${storage.settings.apiKey}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -211,10 +214,10 @@
                 role: "model",
                 parts: [{ text: aiResponse }],
             });
-            saveHistory();
+            saveStorage();
         }
         function saveStorage() {
-            document.cookie = JSON.stringify(cookie)
+            window.engineStorage(JSON.stringify(storage));
         }
         function getHistory() {
             if (storage.chatHistory.length > 0) {
@@ -223,6 +226,7 @@
                         createChatbox(storage.chatHistory[i].parts[0].text, storage.chatHistory[i + 1]?.parts[0].text);
                     }
                 }
+                setInterval(updateSize, 1000);
             }
         }
         function deleteHistory() {
@@ -262,7 +266,7 @@
             border-bottom-left-radius: 25px;
             border-bottom-right-radius: 25px;
             min-height: 180px;
-            max-height: 90%;
+            max-height: 80%;
             overflow: scroll;
         }
 

@@ -1,21 +1,20 @@
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::{self, Read};
+use std::rc::Rc;
 use std::str::FromStr;
 use sysinfo::{Pid, System};
-use std::rc::Rc;
-use std::cell::RefCell;
 
 use tao::{
     dpi::{LogicalSize, Size},
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
+    platform::unix::WindowExtUnix,
     window::WindowBuilder,
-    platform::unix::WindowExtUnix
 };
 use wry::WebViewBuilder;
-
 
 fn main() -> wry::Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -49,6 +48,20 @@ fn main() -> wry::Result<()> {
         theme = args[1].as_str();
     }
 
+    let storage = Rc::new(RefCell::new(scdb::Store::new(
+        "lstr",
+        Some(5), // `max_keys`
+        Some(1),    // `redundant_blocks`
+        Some(1000000),   // `pool_capacity`
+        Some(1800), // `compaction_interval`
+        false,
+    )?));
+    let storage_key = b"localStorage";
+    let storage_data = storage.borrow_mut().get(&storage_key[..])?;
+    let mut storage_string: String = "undefined".to_owned();
+    if storage_data != None {
+        storage_string = String::from_utf8(storage_data.unwrap()).unwrap();
+    }
     #[allow(unused_mut)]
     let mut builder = WindowBuilder::new()
         .with_decorations(false)
@@ -56,10 +69,10 @@ fn main() -> wry::Result<()> {
         .with_resizable(true)
         .with_inner_size(Size::Logical(LogicalSize {
             width: 400.0,
-            height: 200.0,
+            height: 250.0,
         }));
 
-    let window =Rc::new(RefCell::new(builder.build(&event_loop).unwrap()));
+    let window = Rc::new(RefCell::new(builder.build(&event_loop).unwrap()));
     let mut mouse_pos = window.borrow().cursor_position().unwrap();
     mouse_pos.x += 100.0;
     if args.len() >= 3 {
@@ -78,16 +91,16 @@ fn main() -> wry::Result<()> {
     let l_window = window.borrow();
     let vbox = l_window.default_vbox().unwrap();
     let builder = {
-
         use wry::WebViewBuilderExtUnix;
-        
+
         WebViewBuilder::new_gtk(vbox)
     };
     let _webview = builder
         .with_transparent(true)
         .with_ipc_handler({
             let win = Rc::clone(&window);
-            move |req| {
+            let l_storage = Rc::clone(&storage);
+              move|req| {
                 let message = req.body();
                 let parts = message.split("=").collect::<Vec<&str>>();
                 let cmd = parts[0];
@@ -95,8 +108,8 @@ fn main() -> wry::Result<()> {
                 match cmd {
                     "resize" => {
                         let size = ipc_args.split(",").collect::<Vec<&str>>();
-                        let w_size =  win.borrow().inner_size();
-                        let n_size =LogicalSize::new(
+                        let w_size = win.borrow().inner_size();
+                        let n_size = LogicalSize::new(
                             if size[0] == "0" {
                                 w_size.width
                             } else {
@@ -110,7 +123,10 @@ fn main() -> wry::Result<()> {
                         );
 
                         win.borrow().set_inner_size(n_size);
-                        
+                    }
+                    "store" => {
+                        let data = ipc_args.as_bytes();
+                      _= l_storage.borrow_mut().set(&storage_key[..], data, None);
                     }
                     _ => {}
                 }
@@ -125,6 +141,9 @@ fn main() -> wry::Result<()> {
                 .replace(
                     "var sysVars;",
                     format!("var sysVars={};", sys_v.as_str()).as_str(),
+                ).replace(
+                    "var storage;",
+                    format!("var storage={};", storage_string).as_str(),
                 ),
         )
         .build()?;
@@ -240,4 +259,3 @@ fn parse_mo_file(path: &str) -> Result<HashMap<String, String>, Box<dyn std::err
 
     Ok(translations)
 }
-
