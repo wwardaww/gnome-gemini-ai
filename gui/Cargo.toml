@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-scdb = "0.2.1"
 sysinfo = "0.30.12"
 tao = "0.28.0"
 wry = "0.40.1"
