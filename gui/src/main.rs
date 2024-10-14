@@ -1,10 +1,12 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::env;
-use std::fs::{read_to_string, File};
+use std::fs::{read, File};
 use std::io::{self, Read, Write};
 use std::rc::Rc;
 use std::str::FromStr;
+use hex::FromHexError;
+use openssl::symm::{Cipher, Crypter, Mode};
 use sysinfo::{Pid, System};
 
 use tao::{
@@ -14,6 +16,7 @@ use tao::{
     platform::unix::WindowExtUnix,
     window::WindowBuilder,
 };
+
 use wry::WebViewBuilder;
 
 fn main() -> wry::Result<()> {
@@ -49,10 +52,16 @@ fn main() -> wry::Result<()> {
     if args.len() >= 2 {
         theme = args[1].as_str();
     }
+
+    let key =  b"iYrWEA0igaHo8M2g96cYQMSTX90rNJxP"; //Tempscret
+    let iv=b"16bitlentghtivss"; //tempiv
     let storage_data = get_storage(&s_path);
     let mut storage_string: String = "undefined".to_owned();
     if storage_data != None {
-        storage_string = storage_data.unwrap();
+        let d_buff = storage_data.unwrap();
+        let d_text = decrypt(iv, key, &d_buff).unwrap();
+        storage_string = String::from_utf8(d_text).unwrap();
+      
     }
     #[allow(unused_mut)]
     let mut builder = WindowBuilder::new()
@@ -122,8 +131,8 @@ fn main() -> wry::Result<()> {
                         byte_string.iter().for_each(|x| {
                             byte_array.push(x.parse::<u8>().unwrap());
                         });
-
-                        save_storage(byte_array, &s_path);
+                       let e_text = encrypt(iv, key, &byte_array);
+                       save_storage(e_text, &s_path);
                     }
                     "popout" => {
                         win.borrow().set_decorations(true);
@@ -262,12 +271,38 @@ fn parse_mo_file(path: &str) -> Result<HashMap<String, String>, Box<dyn std::err
 }
 fn save_storage(data: Vec<u8>, path: &String) {
     let mut file = File::create(path).unwrap();
-    let content = String::from_utf8(data).unwrap();
-    _ = file.write_all(content.as_bytes());
+    _ = file.write_all(&data);
 }
-fn get_storage(path: &String)-> Option<String>{
-   match read_to_string(path) {
+fn get_storage(path: &String)-> Option<Vec<u8>>{
+   match read(path) {
     Ok(content) => Some(content),
     Err(_) => None,
    }
+}
+fn encrypt(iv: &[u8], key: &[u8], text: &[u8]) -> Vec<u8> {
+    let cipher = Cipher::aes_256_cbc();
+    let mut encrypter = Crypter::new(cipher, Mode::Encrypt, key, Some(iv)).unwrap();
+
+    let block_size = cipher.block_size();
+    let mut encrypted_data = vec![0; text.len() + block_size];
+    let count = encrypter.update(text, &mut encrypted_data).unwrap();
+    let rest = encrypter.finalize(&mut encrypted_data[count..]).unwrap();
+    encrypted_data.truncate(count + rest);
+
+    encrypted_data
+}
+
+fn decrypt(iv: &[u8], key: &[u8], encrypted_data: &[u8]) -> Result<Vec<u8>, FromHexError> {
+    let cipher = Cipher::aes_256_cbc();
+    let mut decrypter = Crypter::new(cipher, Mode::Decrypt, key, Some(iv)).unwrap();
+
+    let block_size = cipher.block_size();
+    let mut decrypted_data = vec![0; encrypted_data.len() + block_size];
+    let count = decrypter
+        .update(encrypted_data, &mut decrypted_data)
+        .unwrap();
+    let rest = decrypter.finalize(&mut decrypted_data[count..]).unwrap();
+    decrypted_data.truncate(count + rest);
+
+    Ok(decrypted_data)
 }
