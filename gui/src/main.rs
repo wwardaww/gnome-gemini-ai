@@ -59,8 +59,9 @@ fn main() -> wry::Result<()> {
         .with_decorations(false)
         .with_transparent(true)
         .with_resizable(true)
+        .with_title("Gemini Ai")
         .with_inner_size(Size::Logical(LogicalSize {
-            width: 400.0,
+            width: 500.0,
             height: 250.0,
         }));
 
@@ -68,7 +69,7 @@ fn main() -> wry::Result<()> {
     let mut mouse_pos = window.borrow().cursor_position().unwrap();
     mouse_pos.x += 100.0;
     if args.len() >= 3 {
-        mouse_pos.x = f64::from_str(args[2].as_str()).unwrap() - 220.0;
+        mouse_pos.x = f64::from_str(args[2].as_str()).unwrap() - 330.0;
         mouse_pos.y = f64::from_str(args[3].as_str()).unwrap();
     }
     window.borrow().set_outer_position(mouse_pos);
@@ -123,6 +124,9 @@ fn main() -> wry::Result<()> {
                         });
 
                         save_storage(byte_array, &s_path);
+                    }
+                    "popout" => {
+                        win.borrow().set_decorations(true);
                     }
                     _ => {}
                 }
