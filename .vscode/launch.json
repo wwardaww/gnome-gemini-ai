@@ -27,6 +27,12 @@
             "request": "launch",
             "name": "Journalctl Watch",
             "command": "journalctl /usr/bin/gnome-shell -f -o cat"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Prepare Translations",
+            "command": "cd ${workspaceFolder} && xgettext --from-code=UTF-8 --output=geminiaiubuntu@arda.com.pot *.js"
         }
     ]
 }
