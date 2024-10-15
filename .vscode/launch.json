@@ -19,6 +19,12 @@
         {
             "type": "node-terminal",
             "request": "launch",
+            "name": "Build Gui (release)",
+            "command": "cd ${workspaceFolder}/gui && cargo build (release)"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
             "name": "Launch Dbus Session",
             "command": "dbus-run-session -- gnome-shell --nested"
         },
