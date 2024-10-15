@@ -53,8 +53,8 @@ fn main() -> wry::Result<()> {
         theme = args[1].as_str();
     }
 
-    let key =  b"iYrWEA0igaHo8M2g96cYQMSTX90rNJxP"; //Tempscret
-    let iv=b"16bitlentghtivss"; //tempiv
+    let key =  b"iYrWEA0igaHo8M2g96cYQMSTX90rNJxP"; //THIS LINE IS CHANGING WHEN PUBLISHING SO IT'S MEANINGLESS
+    let iv=b"16bitlentghtivss"; //THIS LINE IS CHANGING WHEN PUBLISHING SO IT'S MEANINGLESS
     let storage_data = get_storage(&s_path);
     let mut storage_string: String = "undefined".to_owned();
     if storage_data != None {
@@ -99,6 +99,7 @@ fn main() -> wry::Result<()> {
     };
     let _webview = builder
         .with_transparent(true)
+        .with_devtools(false)
         .with_ipc_handler({
             let win = Rc::clone(&window);
             move |req| {
