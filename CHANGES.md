@@ -31,6 +31,11 @@
 
 1. Drag & Drop File
 
+
+## Known Issues
+
+1. If you open settings on extensions app it's oppening additionaly one more window
+
 ### Report a Bug
 
 If you encounter any issues, please create an issue on GitHub. I will fix them when I have free time.

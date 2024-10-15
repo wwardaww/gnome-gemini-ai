@@ -77,7 +77,7 @@ fn main() -> wry::Result<()> {
     let window = Rc::new(RefCell::new(builder.build(&event_loop).unwrap()));
     let mut mouse_pos = window.borrow().cursor_position().unwrap();
     mouse_pos.x += 100.0;
-    if args.len() >= 3 {
+    if args.len() >= 3 && args[2] != "0" {
         mouse_pos.x = f64::from_str(args[2].as_str()).unwrap() - 330.0;
         mouse_pos.y = f64::from_str(args[3].as_str()).unwrap();
     }

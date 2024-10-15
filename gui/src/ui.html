@@ -144,7 +144,16 @@
         // MARK: Init
         getHistory();
         getSettings();
-        chatField.focus();
+        if(sysVars.settings) {
+            document.querySelector(".wrapper.settings").style.display = "block";
+            document.querySelector(".wrapper.home").style.display = "none";
+            window.popout();
+            document.body.classList.add("popout");
+            updateSize(500,250);
+            
+        } else {
+            chatField.focus();
+        }
         //MARK: Translations
         chatField.setAttribute("placeholder", translate("What's on your mind?"));
         document.getElementById("apiKeyText").innerText = translate("Geminiai API Key");
