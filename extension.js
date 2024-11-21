@@ -22,6 +22,7 @@ import St from 'gi://St';
 import GObject from 'gi://GObject';
 import Soup from 'gi://Soup';
 import GLib from 'gi://GLib';
+import Gdk from 'gi://Gdk';
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
@@ -89,7 +90,20 @@ class Gemini extends PanelMenu.Button {
             });
             icon.connect('clicked', () => {
                 const systemSettings = St.Settings.get();
-                let [mouse_x, mouse_y, _] = global.get_pointer();
+                let [mouse_x, mouse_y] = [0, 0];
+                if(global.stage){
+                    let [x, y, _] = global.stage.get_pointer();
+                    mouse_x = x;
+                    mouse_y = y;
+                } else {
+                    let display = Gdk.Display.get_default();
+                    let seat = display.get_default_seat();
+                    let pointer = seat.get_pointer();
+                    let [x, y] = pointer.get_position();
+                    mouse_x = x;
+                    mouse_y = y;
+                }
+
                 const theme = systemSettings.gtkThemeVariant?.toLowerCase().includes('dark') ? 'dark' : 'light';
                 GLib.spawn_command_line_async(Me.path +`/gui/geminigui ${theme} ${mouse_x} ${mouse_y} ${Me.path} userName=${USERNAME}`);
             });
