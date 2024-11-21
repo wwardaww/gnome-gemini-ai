@@ -13,6 +13,12 @@
         {
             "type": "node-terminal",
             "request": "launch",
+            "name": "Build Schema",
+            "command": "cd ${workspaceFolder} && glib-compile-schemas schemas/"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
             "name": "Build Gui",
             "command": "cd ${workspaceFolder}/gui && cargo build"
         },

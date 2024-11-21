@@ -41,6 +41,18 @@ const GeminiaiSettings = new GObject.Class({
         const defaultLog =  this._settings.get_boolean("log-history")
         const defaultVertex =  this._settings.get_boolean("vertex-enabled")
         const defaultVertexProject =  this._settings.get_string("vertex-project-id")
+        const defaultAdvance =  this._settings.get_string("advance-enabled")
+
+        const advancedLabel = new Gtk.Label({
+            label: _("Enable advanced Ui"),
+            halign: Gtk.Align.START
+        });
+        const advancedButton =new Gtk.Switch();
+
+        const advancedHowto = new Gtk.LinkButton({
+            label: _("How to get New Ui?"),
+            uri: 'https://github.com/wwardaww/gnome-gemini-ai/tree/main-beta/gui#advanced-ui-for-gemini-ai-extension'
+        });
 
         const label = new Gtk.Label({
             label: _("Geminiai API Key"),
@@ -110,6 +122,7 @@ const GeminiaiSettings = new GObject.Class({
 
         histroyButton.set_active(defaultLog);
         VertexButton.set_active(defaultVertex);
+        advancedButton.set_active(defaultAdvance);
         modelVersion.set_active(MODELS.findIndex((i) => i == defaultModel));
         apiKey.set_text(defaultKey);
         VertexProject.set_text(defaultVertexProject);
@@ -131,6 +144,7 @@ const GeminiaiSettings = new GObject.Class({
             this._settings.set_string("vertex-project-id", VertexProject.get_buffer().get_text());
             this._settings.set_boolean("log-history", histroyButton.state);
             this._settings.set_boolean("vertex-enabled", VertexButton.state);
+            this._settings.set_boolean("advance-enabled", advancedButton.state);
             statusLabel.set_markup(_("Your preferences have been saved"));
         });
 
@@ -154,8 +168,12 @@ const GeminiaiSettings = new GObject.Class({
         this.main.attach(vertexProjectLabel, 0, 5, 1, 1);
         this.main.attach(VertexProject, 2, 5, 2, 1);
 
-        this.main.attach(save, 2, 6, 1, 1);
-        this.main.attach(statusLabel, 0, 7, 4, 1);
+        this.main.attach(advancedLabel, 0, 6, 1, 1);
+        this.main.attach(advancedButton, 2, 6, 1, 1);
+        this.main.attach(advancedHowto, 4, 6, 1, 1);
+
+        this.main.attach(save, 2, 7, 1, 1);
+        this.main.attach(statusLabel, 0, 8, 4, 1);
 
     } 
 });

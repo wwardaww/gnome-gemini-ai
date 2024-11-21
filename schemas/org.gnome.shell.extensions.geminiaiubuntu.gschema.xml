@@ -44,6 +44,13 @@
            it will enables Vertex API instead of pur gemini
         </description>
     </key>
+    <key name="advance-enabled" type="b">
+        <default>false</default>
+        <summary>Enable Advance Ui</summary>
+        <description>
+           it will enables Advance Ui
+        </description>
+    </key>
 
    
   </schema>
