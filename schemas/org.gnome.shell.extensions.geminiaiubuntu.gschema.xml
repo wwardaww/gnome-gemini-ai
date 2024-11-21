@@ -9,6 +9,13 @@
             You need to set api key for this extention
         </description>
     </key>
+    <key name="gemini-version" type="s">
+        <default>"gemini-1.0-pro"</default>
+        <summary>model version of gemini</summary>
+        <description>
+           It's for usig wich gemeini model are we using
+        </description>
+    </key>
     <key name="vertex-project-id" type="s">
         <default>""</default>
         <summary>Vertex Project ID</summary>
@@ -35,6 +42,13 @@
         <summary>Enable Vertex</summary>
         <description>
            it will enables Vertex API instead of pur gemini
+        </description>
+    </key>
+    <key name="advance-enabled" type="b">
+        <default>false</default>
+        <summary>Enable Advance Ui</summary>
+        <description>
+           it will enables Advance Ui
         </description>
     </key>
 
