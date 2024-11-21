@@ -2,7 +2,7 @@
 
 ## Version 25+
 
-* New Ui 🎉
+* New Ui 🎉 [How to İnstall?](https://github.com/wwardaww/gnome-gemini-ai/tree/main-beta/gui#installing-the-new-ui)
 * Fully MD support
 * Code highlight
 * Theme Switch
