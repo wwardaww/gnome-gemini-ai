@@ -42,6 +42,7 @@ let GEMINIMODEL= "gemini-1.0-pro";
 let USERNAME = GLib.get_real_name();
 let RECURSIVETALK = false;
 let ISVERTEX = false;
+let ISADVANCE = false;
 
 let afterTune;
 const Indicator = GObject.registerClass(
@@ -71,6 +72,7 @@ class Indicator extends PanelMenu.Button {
         RECURSIVETALK          = this._settings.get_boolean("log-history");
         ISVERTEX               = this._settings.get_boolean("vertex-enabled");
         GEMINIMODEL            = this._settings.get_string("gemini-version");
+        ISADVANCE              = this._settings.get_boolean("advance-enabled");
     }
     _init() {
         super._init(0.0, _('Gemini ai for Ubuntu'));
@@ -80,62 +82,76 @@ class Indicator extends PanelMenu.Button {
         }
         this.chatHistory = [];
         
-        this.add_child(new St.Icon({style_class: 'gemini-icon'}));
-        this.menu.actor.style_class = "m-w-100"
-      
-        let item = new PopupMenu.PopupBaseMenuItem({
-            reactive: false,
-            can_focus: false,
-        });
-        this.chatSection = new PopupMenu.PopupMenuSection();
-        this.scrollView = new St.ScrollView({
-            style_class: 'chat-scroll-section'
-        });
-       
-        let searchEntry = new St.Entry({
-            name: 'aiEntry',
-            style_class: 'ai-entry',
-            can_focus: true,
-            hint_text: _("What's on your mind?"),
-            track_hover: true,
-            x_expand: true,
-            y_expand: true
-        });
-        let clearButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'user-trash-symbolic', style_class: 'trash-icon'})
-        });
-        let settingsButton = new St.Button({
-            can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'preferences-system-symbolic', style_class: 'settings-icon'})
-        });
-        this.scrollView.add_actor(this.chatSection.actor);
-        searchEntry.clutter_text.connect('activate', (actor) => {
-            this.aiResponse(actor.text);
-            searchEntry.clutter_text.set_text("");
-
-        });
-        clearButton.connect('clicked', (self) => {
-            searchEntry.clutter_text.set_text("");
-            this.chatHistory = [];
-            this.menu.box.remove_child(this.scrollView);
-            this.chatSection = new PopupMenu.PopupMenuSection();
-            this.scrollView.add_actor(this.chatSection.actor);
-            this.menu.box.add(this.scrollView);
-            if(ISVERTEX){
-                this._initFirstResponse()
-            }
-        });
-        settingsButton.connect('clicked', (self) => {
-            this.openSettings();
-        });
-        if(GEMINIAPIKEY == ""){
-            this.openSettings();
+        let icon =  new St.Icon({style_class: 'gemini-icon'});
+        if(ISADVANCE) {
+            icon = new St.Button({
+                can_focus: false,  toggle_mode: false, child: new St.Icon({style_class: 'gemini-icon'})
+            });
+            icon.connect('clicked', () => {
+                const systemSettings = St.Settings.get();
+                let [mouse_x, mouse_y, _] = global.get_pointer();
+                const theme = systemSettings.gtkThemeVariant?.toLowerCase().includes('dark') ? 'dark' : 'light';
+                GLib.spawn_command_line_async(Me.path +`/gui/geminigui ${theme} ${mouse_x} ${mouse_y} ${Me.path} userName=${USERNAME}`);
+            });
         }
-        item.add(searchEntry);
-        item.add(clearButton);
-        item.add(settingsButton);
-        this.menu.addMenuItem(item);
-        this.menu.box.add(this.scrollView);
-        this._initFirstResponse();
+        this.add_child(icon);
+        this.menu.actor.style_class = "m-w-100"
+        if(!ISADVANCE){
+            let item = new PopupMenu.PopupBaseMenuItem({
+                reactive: false,
+                can_focus: false,
+            });
+            this.chatSection = new PopupMenu.PopupMenuSection();
+            this.scrollView = new St.ScrollView({
+                style_class: 'chat-scroll-section'
+            });
+           
+            let searchEntry = new St.Entry({
+                name: 'aiEntry',
+                style_class: 'ai-entry',
+                can_focus: true,
+                hint_text: _("What's on your mind?"),
+                track_hover: true,
+                x_expand: true,
+                y_expand: true
+            });
+            let clearButton = new St.Button({
+                can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'user-trash-symbolic', style_class: 'trash-icon'})
+            });
+            let settingsButton = new St.Button({
+                can_focus: true,  toggle_mode: true, child: new St.Icon({icon_name: 'preferences-system-symbolic', style_class: 'settings-icon'})
+            });
+            this.scrollView.add_actor(this.chatSection.actor);
+            searchEntry.clutter_text.connect('activate', (actor) => {
+                this.aiResponse(actor.text);
+                searchEntry.clutter_text.set_text("");
+    
+            });
+            clearButton.connect('clicked', (self) => {
+                searchEntry.clutter_text.set_text("");
+                this.chatHistory = [];
+                this.menu.box.remove_child(this.scrollView);
+                this.chatSection = new PopupMenu.PopupMenuSection();
+                this.scrollView.add_actor(this.chatSection.actor);
+                this.menu.box.add(this.scrollView);
+                if(ISVERTEX){
+                    this._initFirstResponse()
+                }
+            });
+            settingsButton.connect('clicked', (self) => {
+                this.openSettings();
+            });
+            if(GEMINIAPIKEY == ""){
+                this.openSettings();
+            }
+            item.add(searchEntry);
+            item.add(clearButton);
+            item.add(settingsButton);
+            this.menu.addMenuItem(item);
+            this.menu.box.add(this.scrollView);
+            this._initFirstResponse();
+        }
+
     }
    
     aiResponse(text){

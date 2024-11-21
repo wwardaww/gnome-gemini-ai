@@ -139,12 +139,15 @@ const GeminiaiSettings = new GObject.Class({
 
         save.connect('clicked', () => {
             this._settings.set_string("gemini-api-key", apiKey.get_buffer().get_text());
-            this._settings.set_string("gemini-version", selectedModel);
+            if(selectedModel) {
+                this._settings.set_string("gemini-version", selectedModel);
+            }
             this._settings.set_string("drive-folder", folderUrl.get_buffer().get_text());
             this._settings.set_string("vertex-project-id", VertexProject.get_buffer().get_text());
             this._settings.set_boolean("log-history", histroyButton.state);
             this._settings.set_boolean("vertex-enabled", VertexButton.state);
             this._settings.set_boolean("advance-enabled", advancedButton.state);
+            
             statusLabel.set_markup(_("Your preferences have been saved"));
         });
 
