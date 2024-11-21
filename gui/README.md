@@ -1,5 +1,16 @@
 # Advanced UI for Gemini AI Extension
 
+## Installing the New UI
+
+1. **Download** the updated UI using this [link](https://github.com/wwardaww/gnome-gemini-ai/releases/latest).
+2. **Copy** the downloaded files to the following directory:  
+   `~/.local/share/gnome-shell/extensions/geminiaiubuntu@arda.com/gui`  
+   *(Create a folder named `gui` if it does not already exist.)*
+3. **Enable** the *Advanced UI* in the settings.
+4. **Re-enter** your API key and configure your settings.
+
+You're all set!
+
 ## Why Do We Need an Advanced UI? Why Not Develop with GnomeJS?
 
 * Initially, I began development using GnomeJS, but it proved to be quite restrictive. For instance, I couldn't highlight code or effectively display embedded images or links.
