@@ -7,6 +7,8 @@
    `~/.local/share/gnome-shell/extensions/geminiaiubuntu@arda.com/gui`  
    *(Create a folder named `gui` if it does not already exist.)*
 3. **Enable** the *Advanced UI* in the settings.
+  ![image](https://github.com/user-attachments/assets/827bc256-e312-40b4-9dbd-c9d9e7f0962e)
+
 4. **Re-enter** your API key and configure your settings.
 
 You're all set!
