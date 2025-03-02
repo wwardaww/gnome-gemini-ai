@@ -13,7 +13,7 @@
 * Text Selection
 * Auto focus & Individually delete
 * Window View
-* Able to launch via Terminal command #11
+* Able to launch via Terminal command [#11](https://github.com/wwardaww/gnome-gemini-ai/issues/11)
 * Bug fix for [#12](https://github.com/wwardaww/gnome-gemini-ai/issues/12) , [#14](https://github.com/wwardaww/gnome-gemini-ai/issues/14)
 
 ## Version 22+
