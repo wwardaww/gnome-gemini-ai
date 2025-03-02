@@ -84,19 +84,25 @@ const Gemini = GObject.registerClass(
                 style_class: 'gemini-icon'
             });
             if (ISADVANCE) {
-                icon = new St.Button({
-                    can_focus: false, toggle_mode: false, child: new St.Icon({icon_name: 'user-gemini-symbolic', style_class: 'gemini-icon' })
+                this.icon = new St.Button({
+                    can_focus: false, toggle_mode: false, child: new St.Icon({ style_class: 'gemini-icon' })
                 });
-                icon.connect('clicked', () => {
+                this.icon.connect('clicked', () => {
                     const systemSettings = St.Settings.get();
                     let [mouse_x, mouse_y] = [0, 0];
-                    if (global.stage) {
+                    if (global.stage && global.stage.get_pointer) {
                         let [x, y, _] = global.stage.get_pointer();
                         mouse_x = x;
                         mouse_y = y;
+                    } else {
+                        if (global.get_pointer) {
+                           let [x, y, _] = global.get_pointer();
+                            mouse_x = x;
+                            mouse_y = y;
+                        }
                     }
                     const theme = systemSettings.gtkThemeVariant?.toLowerCase().includes('dark') ? 'dark' : 'light';
-                    GLib.spawn_command_line_async(Extension.path + `/gui/geminigui ${theme} ${mouse_x} ${mouse_y} ${Extension.path} userName=${USERNAME}`);
+                    GLib.spawn_command_line_async(this.extension.path + `/gui/geminigui ${theme} ${mouse_x} ${mouse_y} ${this.extension.path} userName=${USERNAME}`);
                 });
             }
             hbox.add_child(this.icon);
@@ -293,7 +299,8 @@ export default class GeminiExtension extends Extension {
             clipboard: St.Clipboard.get_default(),
             settings: this.getSettings(),
             openSettings: this.openPreferences,
-            uuid: this.uuid
+            uuid: this.uuid,
+            path: this.dir.get_path()
         });
         Main.panel.addToStatusArea("geminiAiUbuntu", this._gemini, 1);
         _httpSession.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (_httpSession, result) => {
