@@ -1,0 +1,44 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Watch Gui",
+            "command": "cd ${workspaceFolder}/gui && cargo watch -x run"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Build Gui",
+            "command": "cd ${workspaceFolder}/gui && cargo build"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Build Gui (release)",
+            "command": "cd ${workspaceFolder}/gui && cargo build --release"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Launch Dbus Session",
+            "command": "dbus-run-session -- gnome-shell --nested"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Journalctl Watch",
+            "command": "journalctl /usr/bin/gnome-shell -f -o cat"
+        },
+        {
+            "type": "node-terminal",
+            "request": "launch",
+            "name": "Prepare Translations",
+            "command": "cd ${workspaceFolder} && xgettext --from-code=UTF-8 --output=geminiaiubuntu@arda.com.pot *.js"
+        }
+    ]
+}
