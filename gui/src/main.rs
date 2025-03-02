@@ -138,6 +138,9 @@ fn main() -> wry::Result<()> {
                     "popout" => {
                         win.borrow().set_decorations(true);
                     }
+                    "refresh" => {
+                        win.borrow().request_redraw();
+                    }
                     _ => {}
                 }
             }

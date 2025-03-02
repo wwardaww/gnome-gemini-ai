@@ -87,7 +87,10 @@
             <div class="setting-item">
                 <div id="selectModelText" class="settings-label"></div>
                 <select class="settings-text" id="aiModel">
-                    <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash *</option>
+                    <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite*</option>
+                    <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp</option>
+                    <option value="gemini-2.0-flash-thinking-exp-01-21">Gemini 2.0 Flash Thinking Exp</option>
                     <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
                     <option value="gemini-1.5-flash-002">Gemini 1.5 Flash 002</option>
                     <option value="gemini-1.5-8b">Gemini 1.5 Flash 8B</option>
@@ -96,6 +99,7 @@
                 </select>
                 <div style="display: block;"></div>
             </div>
+            <div style="font-size: 12px; text-decoration: underline;" id="paidModel"></div>
         </div>
     </div>
     </div>
@@ -104,6 +108,7 @@
         window.resizeTo = (w, h) => window.ipc?.postMessage(`resize=${w},${h}`);
         window.engineStorage = (data) => window.ipc?.postMessage(`store=${data}`);
         window.popout = () => window.ipc?.postMessage(`popout=`);
+        window.refresh = () => window.ipc?.postMessage(`refresh=`);
     </script>
 
     <!-- MARK: System Variables -->
@@ -160,6 +165,7 @@
         document.getElementById("howTo").innerText = translate("How to get API key?");
         document.getElementById("selectModelText").innerText = translate("Select Gemini Model");
         document.getElementById("selectThemeText").innerText = translate("Select Theme");
+        document.getElementById("paidModel").innerText = translate("* means it is a paid model");
         //MARK: Events
         chatField.addEventListener("keypress", function (event) {
             if (event.key === "Enter") {
@@ -346,6 +352,9 @@
             min-height: 180px;
             max-height: 80%;
             overflow: scroll;
+        }
+        .home{
+            height: 100% !important;
         }
 
         #chat {
