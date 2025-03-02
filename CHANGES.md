@@ -2,6 +2,7 @@
 ## Version 31+
 * Ubuntu 24.x and gnome 46+ Support
 * Gemini 2.0 models for Advanced UI,  [Update UI](https://github.com/wwardaww/gnome-gemini-ai/releases/tag/2.5)
+* Bug fix for [#18](https://github.com/wwardaww/gnome-gemini-ai/issues/18) [#20](https://github.com/wwardaww/gnome-gemini-ai/issues/20)
 
 ## Version 25+
 
