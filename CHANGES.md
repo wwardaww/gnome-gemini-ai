@@ -1,4 +1,7 @@
 # CHANGES
+## UI 2.6 Update 
+* some html tags get corrupt via process md -> html -> string -> crypted binary -> string -> html X, FIXED.
+ [Update UI](https://github.com/wwardaww/gnome-gemini-ai/releases/latest)
 ## Version 31+
 * Ubuntu 24.x and gnome 46+ Support
 * Gemini 2.0 models for Advanced UI,  [Update UI](https://github.com/wwardaww/gnome-gemini-ai/releases/tag/2.5)
