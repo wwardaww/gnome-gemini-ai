@@ -61,6 +61,7 @@ fn main() -> wry::Result<()> {
         let d_buff = storage_data.unwrap();
         let d_text = decrypt(iv, key, &d_buff).unwrap();
         storage_string = String::from_utf8(d_text).unwrap();
+        storage_string = storage_string.replace("<", "&lt;").replace(">", "&gt;")
       
     }
     #[allow(unused_mut)]
@@ -99,7 +100,7 @@ fn main() -> wry::Result<()> {
     };
     let _webview = builder
         .with_transparent(true)
-        .with_devtools(false)
+        //.with_devtools(false)
         .with_ipc_handler({
             let win = Rc::clone(&window);
             move |req| {

@@ -194,7 +194,11 @@
             saveSettings();
         })
         //MARK: Functions
-        function createChatbox(question, answer = undefined) {
+        function createChatbox(question, answer = undefined, fromHistory = false) {
+            let fanswer = answer
+            if(fromHistory) {
+                fanswer = fanswer.replaceAll("&lt;", "<").replaceAll("&gt;", ">");
+            }
             const chatBox = document.createElement("div");
             const uuID = `ar_${Date.now()}`;
             let canResize = false;
@@ -204,8 +208,8 @@
             chatBox.classList.add("chatBox");
             chatBox.setAttribute("ai-id", uuID);
             let aiRes = translate("<b>Gemini: </b> Thinking...")
-            if (answer) {
-                aiRes = md.render(answer);
+            if (fanswer) {
+                aiRes = md.render(fanswer);
             }
             chatBox.innerHTML = `
              <div class="userStory"><b>${sysVars?.userName}:</b> ${question}
@@ -287,7 +291,7 @@
             if (storage.chatHistory.length > 0) {
                 for (let i = 0; i < storage.chatHistory.length; i = i + 2) {
                     if (storage.chatHistory[i].role == "user") {
-                        createChatbox(storage.chatHistory[i].parts[0].text, storage.chatHistory[i + 1]?.parts[0].text);
+                        createChatbox(storage.chatHistory[i].parts[0].text, storage.chatHistory[i + 1]?.parts[0].text, true);
                     }
                 }
                 updateSize();
