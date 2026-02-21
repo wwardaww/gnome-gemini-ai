@@ -1,5 +1,11 @@
 # CHANGES
 
+
+## Version 27
+
+* Added New models to ui
+* Added "Latest" Model (it will automaticly update when Lts model cameout)
+
 ## Version 25+
 
 * New Ui 🎉
@@ -30,7 +36,6 @@
 ## Features in Development
 
 1. Drag & Drop File
-
 
 ## Known Issues
 
